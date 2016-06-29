@@ -1,0 +1,16 @@
+160331_1314	1	globals	Period	NumPeriods	RepeatTreatment	Endowment	Default	Recommendation	EURperton															
+160331_1314	1	globals	1	1	0	7	5	5	9.62															
+160331_1314	1	subjects	Period	Subject	Group	Profit	TotalProfit	Participate	TimeOKWilkommenOK	TimeOKPicPreOK	TimeOKPicInfoOK	Payment	OtherPayment	altPayment	ok	leftempty	Gain	TimeOKProfitDisplayOK	TimeOtherPaymentDecision1UntreatedOK	"!button:1=""Anderer Betrag"";"	TimePaymentEigenerBeitragOK	"<>!button:Default="" <Default | 1> EUR"";"	TimeOkEigenerBeitragOK	"<>!button:1=""OK"";"
+160331_1314	1	subjects	1	1	1	6	6	1	53	48	54	0	1	1	1	0	6	51	42	59	0	0	50	71.979
+160331_1314	1	subjects	1	2	1	6	6	1	53	57	57	0	1	1	1	0	6	9	49	35.818	0	0	42	59.046
+160331_1314	1	subjects	1	3	1	6.5	6.5	1	51	55	54	0	1	0.5	1	0	6.5	50	42	52.837	0	0	46	70.106
+160331_1314	1	subjects	1	4	1	5	5	1	53	55	53	0	1	2	1	0	5	53	41	53.368	0	0	53	62.947
+160331_1314	1	subjects	1	5	1	2	2	1	57	55	54	5	1	0	0	1	2	53	47	40.388	58	44.32	0	0
+160331_1314	1	summary	Period																					
+160331_1314	1	summary	1																					
+160331_1314	1	session	Subject	FinalProfit	ShowUpFee	ShowUpFeeInvested	MoneyAdded	MoneyToPay	MoneyEarned															
+160331_1314	1	session	1	6	0	0	0	6	6															
+160331_1314	1	session	2	6	0	0	0	6	6															
+160331_1314	1	session	3	6.5	0	0	0	6.5	6.5															
+160331_1314	1	session	4	5	0	0	0	5	5															
+160331_1314	1	session	5	2	0	0	0	2	2															

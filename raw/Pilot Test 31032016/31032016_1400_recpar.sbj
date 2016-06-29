@@ -1,0 +1,52 @@
+O:\ztree1\c2\160331_1314.sbj
+Subject	1	2	3	4	5
+client	EL-05	EL-10	EL-15	EL-24	EL-28
+knowSource	Nein	Nein	Nein	Nein	Nein
+payforInf	0	1	0.10	0	6
+belief	1.5	1	3	2	4
+pastRetire	Nein	Nein	Nein	Nein	Nein
+pastOffset	Nein	Nein	Nein	Ja	Nein
+reasonOffsetting				Bei einigen meiner Flüge habe ich ein paar Euro für diese Emissionsrechte gezahlt.	
+party	Keine Angabe	CDU/CSU	SPD	CDU/CSU	SPD
+sourceInterest	  4	  3	  4	  3	  3
+sourceKnow	  3	  1	  2	  2	  2
+persKnow	  1	  1	  2	  2	  0
+persInt	  2	  3	  3	  2	  3
+warmGlow	  3	  3	  3	  2	  3
+guilt	  1	  4	  3	  2	  0
+demandEffect	  1	  2	  2	  3	  2
+conformity	  1	  0	  1	  1	  0
+retireEffic	  2	  3	  2	  1	  3
+moral	  2	  3	  3	  2	  3
+trustPol	  1	  0	  1	  0	  0
+reactance1	  3	  4	  3	  4	  4
+reactance2	  3	  4	  3	  4	  4
+reactance3	  2	  4	  3	  4	  4
+reactance 4	  3	  3	  3	  4	  0
+reactance5	  3	  4	  1	  2	  1
+reactance6	  3	  3	  1	  3	  1
+reactance7	  2	  4	  2	  4	  4
+reactance8	  2	  1	  2	  4	  0
+reactance9	  2	  4	  3	  3	  3
+reactance10	  1	  0	  1	  2	  1
+reactance11	  1	  2	  2	  2	  0
+EAI1	  3	  0	  3	  1	  1
+EAI2	  2	  2	  2	  3	  1
+EAI3	  0	  1	  1	  2	  1
+EAI4	  0	  0	  0	  1	  0
+EAI5	  0	  2	  1	  1	  1
+EAI6	  3	  4	  3	  3	  4
+EAI7	  1	  1	  2	  1	  0
+EAI8	  3	  1	  1	  1	  2
+EAI9	  4	  2	  3	  3	  3
+EAI10	  2	  1	  2	  2	  1
+EAI11	  2	  1	  3	  3	  1
+EAI12	  2	  0	  0	  1	  0
+age	21	23	20	30	20
+gender	Männlich	Weiblich	Weiblich	Männlich	Weiblich
+faculty	Wirtschafts- und Sozialwissenschaften	Wirtschafts- und Sozialwissenschaften	Wirtschafts- und Sozialwissenschaften	Ich studiere nicht	Wirtschafts- und Sozialwissenschaften
+degree	Bachelor	Bachelor	Master	Sonstige	Bachelor
+income	-	200	300	-	400
+notes	Ich war im Zwiespalt ob dies eine Promotion für die Grünen ist oder ob jedem eine anderer Verteter vorgestellt wurde.	Experiment war leicht verstämdlich, ich hätte mir aber mehr Informationen über die Organisation gewüscht			
+believe1	Nein	Ja	Ja	Ja	Nein
+believe2	Ja	Ja	Ja	Nein	Ja

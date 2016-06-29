@@ -1,0 +1,9 @@
+O:\ztree1\c2\160426_1016.xls
+160426_1016	1	summary	
+160426_1016	1	session	Subject	FinalProfit	ShowUpFee	ShowUpFeeInvested	MoneyAdded	MoneyToPay	MoneyEarned	
+160426_1016	1	session	1	5	0	0	0	5	5	
+160426_1016	1	session	2	5	0	0	0	5	5	
+160426_1016	1	session	3	3	0	0	0	3	3	
+160426_1016	1	session	4	7	0	0	0	7	7	
+160426_1016	1	session	5	5.5	0	0	0	5.5	5.5	
+160426_1016	1	session	6	6.5	0	0	0	6.5	6.5	

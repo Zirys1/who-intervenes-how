@@ -1,0 +1,50 @@
+O:\ztree1\c3\160426_1017.sbj
+Subject	1	2	3	4	5	6	7
+client	EL-07	EL-24	EL-25	EL-26	EL-27	EL-28	EL-29
+knowSource	Nein	Nein	Nein	Nein	Nein	Nein	Nein
+payforInf	0	0	0	0	0	0.1	2
+belief	3.5	3	1	0.50	3	0.5	2
+pastRetire	Nein	Ja	Nein	Nein	Nein	Nein	Nein
+pastOffset	Nein	Nein	Nein	Nein	Nein	Ja	Nein
+reasonOffsetting						MeinFernbusFlixbus co2-Reisezuschlag	
+party	Die Linke	Keine (Nichtwähler)	SPD	Die Linke	Die Linke	Bündnis90/Grüne	SPD
+sourceInterest	  3	  3	  3	  3	  3	  4	  3
+sourceKnow	  3	  3	  2	  2	  2	  2	  2
+persKnow	  2	  3	  2	  1	  1	  2	  1
+persInt	  4	  4	  3	  1	  3	  3	  2
+warmGlow	  3	  4	  3	  2	  3	  4	  2
+guilt	  4	  4	  3	  2	  3	  1	  1
+demandEffect	  1	  1	  4	  3	  1	  2	  2
+conformity	  0	  1	  1	  1	  1	  0	  1
+retireEffic	  1	  4	  3	  2	  2	  3	  0
+moral	  3	  4	  3	  2	  3	  3	  3
+trustPol	  1	  0	  2	  1	  1	  2	  1
+reactance1	  3	  3	  3	  3	  3	  3	  3
+reactance2	  3	  4	  3	  3	  3	  4	  3
+reactance3	  3	  2	  2	  2	  3	  1	  2
+reactance 4	  1	  0	  2	  1	  1	  1	  2
+reactance5	  3	  0	  1	  2	  1	  3	  1
+reactance6	  0	  0	  1	  1	  3	  1	  1
+reactance7	  3	  2	  2	  2	  3	  3	  1
+reactance8	  3	  2	  3	  3	  3	  3	  3
+reactance9	  1	  1	  2	  2	  4	  2	  2
+reactance10	  1	  0	  2	  1	  2	  0	  1
+reactance11	  1	  0	  2	  1	  1	  0	  1
+EAI1	  2	  4	  3	  1	  3	  4	  1
+EAI2	  0	  2	  1	  2	  2	  1	  1
+EAI3	  0	  4	  2	  1	  2	  3	  1
+EAI4	  1	  0	  1	  1	  0	  0	  0
+EAI5	  1	  1	  1	  1	  1	  2	  3
+EAI6	  4	  4	  3	  2	  4	  3	  3
+EAI7	  3	  3	  3	  1	  2	  1	  1
+EAI8	  1	  0	  2	  2	  1	  0	  1
+EAI9	  4	  4	  3	  3	  4	  4	  1
+EAI10	  0	  0	  2	  2	  1	  0	  2
+EAI11	  4	  4	  3	  2	  4	  4	  1
+EAI12	  2	  3	  1	  1	  0	  0	  0
+age	25	21	22	23	24	26	27
+gender	Weiblich	Weiblich	Weiblich	Männlich	Weiblich	Weiblich	Männlich
+faculty	Wirtschafts- und Sozialwissenschaften	Wirtschafts- und Sozialwissenschaften	Wirtschafts- und Sozialwissenschaften	Wirtschafts- und Sozialwissenschaften	Erziehungswissenschaft	Wirtschafts- und Sozialwissenschaften	Wirtschafts- und Sozialwissenschaften
+degree	Bachelor	Bachelor	Bachelor	Bachelor	Master	Bachelor	Bachelor
+income	650	450	450	700	1100	1200	500
+believe2	Ja	Nein	Nein	Ja	Nein	Ja	Nein

@@ -1,0 +1,50 @@
+O:\ztree1\160412_1510.sbj																											
+Subject	1	2	3	4	5	6	7	8	9	10	11	12	13	14	15	16	17	18	19	20	21	22	23	24	25	26	27
+client	EL-01	EL-02	EL-03	EL-04	EL-05	EL-06	EL-07	EL-09	EL-10	EL-11	EL-12	EL-13	EL-14	EL-15	EL-16	EL-18	EL-19	EL-20	EL-21	EL-22	EL-23	EL-24	EL-25	EL-27	EL-28	EL-29	EL-30
+knowSource	Nein	Nein	Nein	Nein	Nein	Nein	Nein	Nein	Nein	Nein	Nein	Nein	Nein	Nein	Nein	Nein	Nein	Nein	Nein	Nein	Nein	Nein	Nein	Nein	Nein	Nein	Nein
+payforInf	2	0	0	0	0	0	2	4	2	0.1	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
+belief	0	0.5	1	2	2	2	3	3	5	1	0.3	0.7	1	2	1	1	1	2	1	2	1	1	1	2	0.5	3	2
+pastRetire	Nein	Nein	Ja	Nein	Nein	Nein	Nein	Nein	Nein	Nein	Ja	Nein	Nein	Nein	Nein	Nein	Nein	Nein	Nein	Nein	Nein	Ja	Nein	Nein	Nein	Nein	Nein
+pastOffset	Nein	Nein	Nein	Ja	Nein	Ja	Nein	Nein	Nein	Nein	Ja	Nein	Nein	Nein	Ja	Ja	Nein	Nein	Nein	Ja	Ja	Ja	Nein	Nein	Nein	Ja	Nein
+reasonOffsetting				Bei Reisen per Fernbus-Flixbus ist es möglich einen derartigen Aufschlag zur Kompensation der CO2-Emissionen freiwllig zu bezahlen.		Durch die Zahlung eines Aufschlages bei Reisen mit dem Fernbus sowie der Deutschen Bahn.					Bei einer Versandbestellung				Bei einigen Airlines ist es doch im Preis als Aufschlag inbegriffen.	Aufschlagzahlung bei Buchung einer FlixbusFernreise				Ein Projekt das die Umstellung auf klimaneutrale Technologie direkt fördert und somit den CO2 Austoß real senkt und nicht nur wie z.B. TheCompensators zur Verlagerung von Produktion (und somit Ausstoß von CO2) in Staaten mit geringeren Umweltauflagen beiträgt.	Kürzlich 01  bei einer FlixbusBuchung  bei einem so geringen Betrag ist die Hemmschwelle extrem gering...	GreenSeat bei Flügen				Zusahlung bei der Bahn  Flugzeug	
+party	FDP	Andere	SPD	Keine (Nichtwähler)	SPD	Andere	AfD	SPD	Keine (Nichtwähler)	SPD	Bündnis90/Grüne	Andere	SPD	Die Linke	AfD	Die Linke	Keine (Nichtwähler)	Bündnis90/Grüne	Bündnis90/Grüne	Bündnis90/Grüne	SPD	SPD	Die Linke	Bündnis90/Grüne	SPD	Bündnis90/Grüne	CDU/CSU
+sourceInterest	3	1	3	2	3	3	3	2	4	3	4	4	4	3	4	4	3	4	2	4	4	3	3	4	3	0	4
+sourceKnow	2	2	2	2	3	2	3	2	3	3	2	4	2	2	2	2	2	2	2	3	4	3	4	2	2	1	2
+persKnow	1	0	3	2	3	3	2	2	0	1	2	1	1	2	1	3	1	4	3	3	3	3	3	2	0	2	2
+persInt	1	1	3	2	4	3	3	1	2	1	3	0	0	2	2	3	1	4	3	3	1	3	3	2	1	3	1
+warmGlow	3	2	3	2	4	3	3	3	2	2	3	2	0	2	2	3	2	4	4	4	1	2	4	1	1	1	2
+guilt	1	1	3	1	3	3	3	3	1	2	2	0	1	2	2	4	1	0	4	2	1	1	1	0	2	1	2
+demandEffect	1	1	2	2	4	3	3	1	4	1	2	4	1	2	2	1	2	2	0	1	0	0	1	0	1	1	1
+conformity	0	0	0	1	0	1	2	0	0	0	1	1	0	2	1	1	0	1	0	0	0	0	0	0	2	0	1
+retireEffic	3	0	3	2	3	3	4	2	2	3	2	3	2	2	3	2	2	3	0	0	0	3	4	3	2	0	3
+moral	0	0	3	2	3	3	3	2	0	2	3	2	0	2	3	4	1	4	0	3	3	3	1	1	1	3	0
+trustPol	1	0	1	1	2	2	3	1	0	1	2	1	0	2	0	1	1	1	0	2	0	2	0	0	0	2	0
+reactance1	3	3	4	2	3	4	3	3	3	0	2	3	3	2	3	3	3	4	4	3	4	3	3	2	4	3	4
+reactance2	3	3	4	2	4	4	4	3	3	3	3	4	3	2	3	4	3	4	4	3	4	3	3	3	4	3	4
+reactance3	4	3	1	3	1	3	4	1	1	2	3	4	4	2	2	3	4	3	2	3	4	3	2	3	4	2	4
+reactance 4	1	3	1	2	1	3	4	2	1	2	2	1	0	2	0	1	3	1	0	1	3	3	1	1	3	1	3
+reactance5	0	2	1	3	2	2	3	1	2	1	3	1	0	2	0	1	2	3	0	3	3	2	3	2	3	2	3
+reactance6	1	1	1	1	0	1	1	1	2	0	1	0	0	2	0	1	2	0	0	1	0	1	1	1	1	1	1
+reactance7	3	2	3	3	2	1	4	2	1	2	3	3	3	2	2	2	3	1	4	1	3	4	3	1	1	2	2
+reactance8	3	3	3	2	2	3	3	3	3	1	3	4	0	2	1	3	2	1	3	2	3	3	3	2	1	2	2
+reactance9	0	2	2	2	2	3	4	1	3	2	2	1	1	2	0	2	3	2	2	1	1	3	1	1	2	1	3
+reactance10	1	1	1	2	1	1	4	1	1	1	2	2	0	2	0	1	2	0	1	1	1	2	0	1	0	1	3
+reactance11	0	1	1	1	0	1	3	1	1	1	2	0	0	2	0	0	2	0	1	1	1	1	0	1	0	1	1
+EAI1	2	0	2	3	2	3	4	4	3	3	4	2	0	2	3	4	1	4	4	4	4	3	4	2	1	3	0
+EAI2	1	0	2	2	2	1	4	2	2	2	1	2	1	2	2	3	2	0	4	0	1	3	1	1	1	2	4
+EAI3	1	0	0	1	2	1	4	3	0	1	2	0	0	2	0	4	1	4	2	0	1	2	0	0	1	1	0
+EAI4	1	1	0	2	0	1	1	1	2	3	2	1	0	2	0	0	2	1	0	1	1	1	0	1	0	1	2
+EAI5	1	4	1	1	1	2	0	2	3	3	0	4	0	2	0	3	2	1	1	1	1	1	3	0	0	1	1
+EAI6	0	3	3	2	4	3	3	3	4	3	4	4	2	2	3	4	3	4	4	2	4	4	4	3	4	3	4
+EAI7	1	2	0	0	0	4	4	2	1	2	3	3	1	2	0	3	2	2	3	3	0	4	3	2	1	1	1
+EAI8	1	1	1	2	0	1	1	1	1	1	1	3	2	2	1	0	2	1	1	1	3	1	0	1	3	1	3
+EAI9	4	2	1	2	3	4	1	3	4	3	3	4	1	2	1	4	3	3	3	4	3	2	4	3	1	1	3
+EAI10	3	2	1	2	1	2	1	2	2	2	1	3	3	2	1	0	1	0	0	1	1	1	0	2	0	1	3
+EAI11	2	3	3	1	3	3	4	3	3	3	3	1	3	2	3	4	3	3	4	3	3	3	1	3	0	2	3
+EAI12	0	0	0	2	2	2	0	1	0	1	1	2	0	2	0	3	2	2	1	3	3	0	1	1	0	1	0
+age	20	18	23	22	20	24	29	25	19	24	34	23	24	99	25	21	26	35	29	25	23	29	21	30	19	27	25
+gender	Weiblich	Weiblich	Männlich	Männlich	Männlich	Weiblich	Weiblich	Männlich	Weiblich	Weiblich	Männlich	Weiblich	Weiblich	Keine Angabe	Weiblich	Weiblich	Weiblich	Männlich	Männlich	Männlich	Männlich	Männlich	Weiblich	Männlich	Männlich	Männlich	Männlich
+faculty	Medizin	Geisteswissenschaft	Wirtschafts- und Sozialwissenschaften	Andere	Wirtschafts- und Sozialwissenschaften	Geisteswissenschaft	Wirtschafts- und Sozialwissenschaften	Wirtschafts- und Sozialwissenschaften	Ich studiere nicht	Erziehungswissenschaft	Andere	Wirtschafts- und Sozialwissenschaften	Mathematik, Informatik und Naturwissenschaften	Andere	Erziehungswissenschaft	Wirtschafts- und Sozialwissenschaften	Erziehungswissenschaft	Rechtswissenschaft	Wirtschafts- und Sozialwissenschaften	Andere	Andere	Geisteswissenschaft	Mathematik, Informatik und Naturwissenschaften	Wirtschafts- und Sozialwissenschaften	Betriebswirtschaft	Mathematik, Informatik und Naturwissenschaften	Mathematik, Informatik und Naturwissenschaften
+degree	Staatsexamen	Bachelor	Bachelor	Bachelor	Bachelor	Bachelor	Bachelor	Bachelor	Sonstige	Master	Bachelor	Bachelor	Bachelor	Sonstige	Sonstige	Bachelor	Bachelor	Staatsexamen	Bachelor	Bachelor	Bachelor	Master	Bachelor	Sonstige	Bachelor	Master	Master
+income	450	200	1000	900	450	500	650	600		500		630	800	190	300	200	700	1500	950	300	1200	500	800	1500	0	400	1000
+believe2	Nein	Ja	Ja	Ja	Ja	Ja	Nein	Ja	Ja	Nein	Ja	Nein	Nein	Nein	Ja	Ja	Nein	Ja	Nein	Nein	Nein	Ja	Nein	Ja	Ja	Nein	Ja

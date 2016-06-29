@@ -1,0 +1,46 @@
+O:\ztree1\c1\160426_1016.sbj
+Subject	1	2	3
+client	EL-02	EL-05	EL-06
+payforInf	1	0	0.5
+belief	1	2	2
+pastRetire	Nein	Nein	Nein
+pastOffset	Nein	Nein	Nein
+reasonOffsetting			
+party	Keine (Nichtwähler)	Bündnis90/Grüne	CDU/CSU
+persKnow	  2	  0	  3
+persInt	  3	  3	  3
+warmGlow	  2	  3	  2
+guilt	  3	  1	  0
+demandEffect	  2	  3	  2
+conformity	  1	  1	  1
+retireEffic	  3	  2	  0
+moral	  4	  3	  2
+trustPol	  1	  0	  0
+reactance1	  3	  4	  3
+reactance2	  4	  4	  2
+reactance3	  3	  4	  3
+reactance 4	  1	  3	  1
+reactance5	  1	  1	  2
+reactance6	  0	  1	  0
+reactance7	  2	  3	  2
+reactance8	  2	  3	  1
+reactance9	  1	  1	  2
+reactance10	  2	  0	  1
+reactance11	  1	  0	  0
+EAI1	  4	  4	  2
+EAI2	  2	  4	  0
+EAI3	  2	  3	  2
+EAI4	  1	  0	  1
+EAI5	  1	  2	  0
+EAI6	  3	  4	  2
+EAI7	  3	  4	  1
+EAI8	  0	  0	  2
+EAI9	  3	  4	  0
+EAI10	  2	  0	  3
+EAI11	  3	  4	  2
+EAI12	  2	  0	  1
+age	25	27	24
+gender	Weiblich	Weiblich	Männlich
+faculty	Geisteswissenschaft	Erziehungswissenschaft	Wirtschafts- und Sozialwissenschaften
+degree	Bachelor	Master	Bachelor
+income	450	300	450

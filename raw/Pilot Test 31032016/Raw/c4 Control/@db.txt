@@ -1,0 +1,8 @@
+O:\ztree1\c4\160331_1314.xls
+160331_1314	1	summary	
+160331_1314	1	session	Subject	FinalProfit	ShowUpFee	ShowUpFeeInvested	MoneyAdded	MoneyToPay	MoneyEarned	
+160331_1314	1	session	1	5.5	0	0	0	5.5	5.5	
+160331_1314	1	session	2	5	0	0	0	5	5	
+160331_1314	1	session	3	5	0	0	0	5	5	
+160331_1314	1	session	4	6	0	0	0	6	6	
+160331_1314	1	session	5	5	0	0	0	5	5	

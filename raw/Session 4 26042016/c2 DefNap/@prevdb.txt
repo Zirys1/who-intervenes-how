@@ -1,0 +1,9 @@
+
+160426_1157	1	summary	Period	
+160426_1157	1	summary	1	
+160426_1157	1	session	Subject	FinalProfit	ShowUpFee	ShowUpFeeInvested	MoneyAdded	MoneyToPay	MoneyEarned	
+160426_1157	1	session	1	0	0	0	0	0	0	
+160426_1157	1	session	2	0	0	0	0	0	0	
+160426_1157	1	session	3	0	0	0	0	0	0	
+160426_1157	1	session	4	0	0	0	0	0	0	
+160426_1157	1	session	5	0	0	0	0	0	0	

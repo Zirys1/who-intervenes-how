@@ -1,0 +1,51 @@
+O:\ztree1\c2\160426_1157.sbj
+Subject	1	2	3	4	5
+client	EL-10	EL-11	EL-12	EL-13	EL-14
+knowSource	Nein	Nein	Nein	Nein	Nein
+payforInf	0	2	0	0	0
+belief	3	3	2	2	2
+pastRetire	Nein	Nein	Nein	Nein	Nein
+pastOffset	Nein	Nein	Nein	Nein	Nein
+reasonOffsetting					
+party	SPD	SPD	Die Linke	Die Linke	SPD
+sourceInterest	  4	  4	  2	  2	  3
+sourceKnow	  2	  4	  2	  2	  2
+persKnow	  2	  2	  0	  0	  3
+persInt	  3	  4	  0	  2	  3
+warmGlow	  3	  4	  3	  2	  2
+guilt	  2	  3	  1	  3	  1
+demandEffect	  2	  2	  3	  0	  1
+conformity	  0	  0	  0	  0	  1
+retireEffic	  2	  3	  1	  2	  1
+moral	  2	  1	  2	  2	  3
+trustPol	  1	  0	  0	  1	  0
+effPercept	  1	  2	  0	  3	  0
+reactance1	  3	  4	  3	  4	  3
+reactance2	  3	  4	  4	  3	  3
+reactance3	  3	  3	  1	  3	  3
+reactance 4	  2	  1	  3	  3	  2
+reactance5	  2	  4	  2	  2	  3
+reactance6	  1	  4	  1	  1	  1
+reactance7	  2	  4	  2	  3	  2
+reactance8	  2	  2	  3	  4	  3
+reactance9	  1	  0	  2	  2	  3
+reactance10	  1	  2	  1	  1	  2
+reactance11	  0	  0	  1	  1	  2
+EAI1	  3	  3	  2	  3	  3
+EAI2	  2	  4	  0	  0	  1
+EAI3	  1	  1	  1	  0	  2
+EAI4	  2	  0	  0	  0	  1
+EAI5	  1	  0	  0	  2	  2
+EAI6	  3	  3	  4	  3	  3
+EAI7	  2	  2	  3	  1	  3
+EAI8	  2	  0	  3	  3	  1
+EAI9	  2	  0	  4	  3	  1
+EAI10	  3	  0	  0	  2	  1
+EAI11	  2	  4	  3	  3	  3
+EAI12	  1	  0	  0	  0	  1
+age	25	28	25	25	30
+gender	Weiblich	Weiblich	Männlich	Weiblich	Weiblich
+faculty	Betriebswirtschaft	Betriebswirtschaft	Geisteswissenschaft	Wirtschafts- und Sozialwissenschaften	Geisteswissenschaft
+degree	Bachelor	Bachelor	Bachelor	Master	Bachelor
+income	600		500	1100	700
+believe2	Ja	Ja	Ja	Ja	Nein

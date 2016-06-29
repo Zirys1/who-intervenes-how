@@ -1,0 +1,50 @@
+O:\ztree1\160419_1215.sbj
+Subject	1	2	3	4	5	6	7	8	9	10	11	12	13	14	15	16	17	18	19	20	21	22	23	24	25
+client	EL-01	EL-02	EL-03	EL-04	EL-05	EL-06	EL-08	EL-09	EL-10	EL-11	EL-12	EL-13	EL-14	EL-16	EL-18	EL-19	EL-20	EL-22	EL-23	EL-24	EL-25	EL-26	EL-28	EL-29	EL-30
+knowSource	Nein	Nein	Nein	Nein	Nein	Nein	Nein	Nein	Nein	Nein	Nein	Nein	Nein	Nein	Nein	Nein	Nein	Nein	Nein	Nein	Nein	Nein	Nein	Nein	Nein
+payforInf	0	0	0	0	1	0	0	0.20	1	0.00	0	0	0	1	0	0	0	0	0	0.50	0	0	1.00	1	0
+belief	3	1	2	2	3	1.5	2	2.50	1	0.70	0.5	2	2	4	2	2	1	2	2	3	3.5	3	2.00	1	2
+pastRetire	Nein	Nein	Nein	Nein	Nein	Nein	Nein	Nein	Nein	Nein	Nein	Nein	Nein	Nein	Nein	Nein	Nein	Nein	Nein	Nein	Nein	Nein	Nein	Nein	Nein
+pastOffset	Nein	Ja	Nein	Nein	Nein	Nein	Nein	Nein	Nein	Nein	Ja	Nein	Ja	Nein	Nein	Nein	Ja	Nein	Nein	Nein	Nein	Nein	Nein	Nein	Nein
+reasonOffsetting		Bei Fernbusanbietern, gibt es manchmal die Möglichkeit einen CO2 Zuschlag zu zahlen, was ich dann auch getan habe.									meinfernbus 8 cent pro fahrt		Bei einer Flugreise				Flixbus fragt bei der Buchung/Zahlung nach einem kleinen Aufschlag.								
+party	CDU/CSU	SPD	Bündnis90/Grüne	CDU/CSU	Die Linke	FDP	CDU/CSU	AfD	CDU/CSU	Die Linke	Keine (Nichtwähler)	Bündnis90/Grüne	CDU/CSU	Bündnis90/Grüne	CDU/CSU	Bündnis90/Grüne	CDU/CSU	Bündnis90/Grüne	FDP	Die Linke	Die Linke	Andere	SPD	Die Linke	FDP
+sourceInterest	  4	  3	  3	  3	  4	  3	  3	  4	  4	  3	  3	  4	  3	  4	  4	  1	  4	  4	  3	  3	  3	  4	  4	  4	  3
+sourceKnow	  2	  3	  3	  3	  4	  3	  4	  3	  3	  2	  2	  3	  3	  4	  4	  3	  3	  4	  3	  2	  3	  3	  4	  3	  3
+persKnow	  4	  2	  4	  1	  1	  2	  3	  3	  1	  2	  3	  3	  3	  2	  2	  3	  2	  4	  3	  1	  3	  1	  2	  3	  3
+persInt	  0	  2	  4	  2	  3	  2	  2	  3	  1	  2	  2	  2	  2	  3	  3	  2	  2	  4	  2	  3	  3	  2	  3	  3	  2
+warmGlow	  0	  2	  4	  3	  3	  3	  2	  3	  1	  2	  2	  4	  2	  4	  3	  3	  3	  4	  3	  3	  2	  3	  3	  3	  2
+guilt	  0	  2	  4	  3	  4	  2	  1	  4	  2	  1	  2	  3	  1	  4	  2	  3	  3	  4	  1	  1	  2	  2	  4	  3	  0
+demandEffect	  1	  2	  2	  3	  3	  2	  2	  2	  3	  1	  2	  1	  1	  3	  3	  4	  0	  4	  0	  1	  3	  3	  1	  2	  2
+conformity	  0	  2	  0	  1	  0	  1	  1	  1	  2	  1	  2	  1	  0	  1	  0	  2	  2	  0	  1	  3	  0	  0	  1	  1	  1
+retireEffic	  1	  2	  2	  3	  1	  3	  1	  2	  1	  2	  3	  4	  3	  3	  2	  1	  2	  1	  1	  3	  3	  2	  4	  1	  0
+moral	  0	  2	  1	  2	  3	  1	  1	  3	  2	  2	  2	  3	  1	  4	  1	  2	  2	  4	  1	  3	  1	  3	  4	  3	  3
+trustPol	  1	  1	  0	  0	  0	  1	  1	  0	  3	  2	  0	  0	  1	  1	  1	  1	  1	  0	  1	  0	  1	  1	  0	  0	  1
+reactance1	  4	  3	  4	  3	  4	  3	  3	  3	  4	  4	  3	  4	  4	  4	  3	  3	  3	  4	  3	  4	  3	  4	  3	  3	  3
+reactance2	  4	  4	  4	  3	  4	  4	  3	  3	  4	  3	  3	  4	  4	  3	  3	  4	  4	  4	  3	  4	  3	  4	  3	  3	  3
+reactance3	  4	  3	  3	  1	  4	  4	  1	  3	  3	  4	  2	  4	  3	  4	  3	  2	  1	  2	  3	  4	  2	  4	  3	  3	  2
+reactance 4	  2	  1	  2	  1	  2	  1	  1	  4	  1	  2	  2	  3	  3	  2	  1	  1	  1	  2	  3	  3	  2	  3	  1	  3	  2
+reactance5	  3	  1	  1	  1	  4	  1	  2	  4	  2	  2	  2	  2	  3	  3	  1	  2	  2	  3	  2	  0	  2	  3	  1	  4	  3
+reactance6	  1	  1	  1	  0	  3	  1	  1	  2	  0	  2	  3	  0	  2	  1	  0	  1	  1	  2	  1	  1	  2	  0	  1	  3	  1
+reactance7	  1	  2	  2	  2	  4	  3	  3	  2	  2	  1	  2	  3	  2	  2	  2	  3	  2	  2	  1	  0	  2	  3	  1	  3	  1
+reactance8	  0	  3	  3	  1	  1	  1	  3	  3	  2	  3	  1	  3	  3	  3	  3	  2	  2	  4	  3	  1	  3	  4	  1	  3	  2
+reactance9	  1	  2	  2	  1	  3	  3	  2	  3	  0	  2	  2	  1	  3	  3	  2	  2	  1	  4	  2	  3	  2	  2	  0	  3	  2
+reactance10	  3	  1	  2	  1	  1	  2	  1	  2	  2	  2	  0	  1	  1	  2	  1	  1	  0	  2	  3	  1	  1	  1	  3	  3	  1
+reactance11	  2	  1	  2	  1	  1	  1	  1	  2	  0	  2	  1	  1	  1	  1	  1	  1	  0	  1	  1	  1	  1	  1	  2	  3	  0
+EAI1	  4	  4	  4	  1	  1	  3	  3	  4	  2	  2	  3	  4	  3	  4	  3	  4	  3	  4	  1	  4	  4	  1	  3	  4	  3
+EAI2	  4	  1	  2	  1	  2	  1	  1	  1	  1	  2	  2	  1	  1	  2	  3	  1	  2	  0	  4	  3	  2	  2	  3	  3	  1
+EAI3	  0	  0	  4	  0	  1	  1	  0	  3	  0	  0	  1	  4	  1	  1	  3	  2	  2	  3	  1	  1	  2	  1	  3	  3	  0
+EAI4	  4	  2	  0	  0	  1	  1	  0	  1	  0	  2	  2	  2	  1	  0	  0	  0	  2	  0	  0	  0	  0	  1	  1	  1	  1
+EAI5	  2	  1	  1	  2	  3	  1	  1	  3	  1	  2	  1	  0	  3	  3	  1	  2	  1	  1	  3	  3	  3	  0	  3	  3	  1
+EAI6	  3	  3	  4	  3	  4	  3	  4	  4	  2	  3	  3	  4	  4	  3	  3	  4	  4	  4	  2	  4	  4	  3	  4	  4	  3
+EAI7	  0	  2	  3	  1	  3	  1	  1	  2	  1	  2	  2	  4	  2	  3	  1	  2	  3	  2	  1	  1	  3	  2	  1	  3	  0
+EAI8	  3	  1	  1	  3	  1	  3	  1	  1	  2	  1	  2	  1	  1	  1	  1	  1	  3	  0	  1	  1	  1	  2	  1	  1	  1
+EAI9	  4	  3	  2	  3	  3	  3	  3	  2	  2	  3	  2	  4	  2	  4	  2	  4	  4	  4	  3	  4	  4	  2	  2	  3	  1
+EAI10	  3	  1	  2	  1	  3	  3	  1	  1	  3	  2	  2	  1	  2	  1	  1	  0	  2	  0	  1	  1	  0	  3	  0	  1	  3
+EAI11	  3	  4	  3	  2	  4	  2	  3	  4	  2	  3	  3	  4	  3	  3	  2	  4	  4	  4	  2	  3	  3	  3	  3	  3	  0
+EAI12	  0	  2	  1	  0	  1	  1	  1	  4	  1	  2	  2	  2	  1	  0	  1	  3	  0	  2	  0	  2	  0	  1	  0	  3	  0
+age	27	20	28	23	25	20	19	25	18	24	23	20	20	20	22	24	21	25	22	25	24	18	21	21	24
+gender	Männlich	Weiblich	Weiblich	Weiblich	Weiblich	Männlich	Männlich	Männlich	Weiblich	Weiblich	Männlich	Weiblich	Männlich	Weiblich	Weiblich	Weiblich	Weiblich	Weiblich	Männlich	Weiblich	Weiblich	Männlich	Weiblich	Weiblich	Männlich
+faculty	Geisteswissenschaft	Wirtschafts- und Sozialwissenschaften	Mathematik, Informatik und Naturwissenschaften	Erziehungswissenschaft	Rechtswissenschaft	Wirtschafts- und Sozialwissenschaften	Wirtschafts- und Sozialwissenschaften	Mathematik, Informatik und Naturwissenschaften	Betriebswirtschaft	Geisteswissenschaft	Andere	Wirtschafts- und Sozialwissenschaften	Wirtschafts- und Sozialwissenschaften	Geisteswissenschaft	Wirtschafts- und Sozialwissenschaften	Erziehungswissenschaft	Geisteswissenschaft	Wirtschafts- und Sozialwissenschaften	Wirtschafts- und Sozialwissenschaften	Erziehungswissenschaft	Wirtschafts- und Sozialwissenschaften	Wirtschafts- und Sozialwissenschaften	Mathematik, Informatik und Naturwissenschaften	Erziehungswissenschaft	Wirtschafts- und Sozialwissenschaften
+degree	Bachelor	Bachelor	Master	Bachelor	Magister	Bachelor	Bachelor	Master	Bachelor	Master	Bachelor	Bachelor	Bachelor	Bachelor	Bachelor	Bachelor	Bachelor	Master	Bachelor	Master	Bachelor	Bachelor	Bachelor	Bachelor	Master
+income	370	600	1300	600	1300	400	700	800	0	850	450	0	800	730	400	250	600	550	400	700	700	50	400		850
+believe2	Ja	Nein	Ja	Ja	Ja	Ja	Ja	Ja	Ja	Nein	Ja	Ja	Nein	Ja	Nein	Ja	Ja	Ja	Ja	Ja	Ja	Ja	Ja	Nein	Ja

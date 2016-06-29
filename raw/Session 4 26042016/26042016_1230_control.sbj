@@ -1,0 +1,45 @@
+O:\ztree1\c1\160426_1157.sbj
+Subject	1	2	3
+client	EL-02	EL-03	EL-04
+belief	7	2.00	2
+pastRetire	Ja	Nein	Nein
+pastOffset	Ja	Nein	Nein
+reasonOffsetting			
+party	AfD	Andere	CDU/CSU
+persKnow	  4	  1	  4
+persInt	  4	  3	  3
+warmGlow	  4	  3	  3
+guilt	  4	  2	  3
+demandEffect	  4	  2	  0
+conformity	  4	  0	  0
+retireEffic	  4	  2	  2
+moral	  4	  3	  2
+trustPol	  4	  0	  1
+reactance1	  0	  3	  3
+reactance2	  0	  3	  3
+reactance3	  0	  2	  4
+reactance 4	  0	  2	  2
+reactance5	  0	  1	  2
+reactance6	  0	  1	  0
+reactance7	  0	  3	  1
+reactance8	  0	  2	  3
+reactance9	  0	  1	  2
+reactance10	  0	  1	  1
+reactance11	  0	  1	  0
+EAI1	  4	  3	  1
+EAI2	  4	  2	  1
+EAI3	  4	  1	  0
+EAI4	  0	  0	  0
+EAI5	  0	  0	  1
+EAI6	  4	  3	  3
+EAI7	  4	  2	  0
+EAI8	  0	  1	  1
+EAI9	  0	  3	  2
+EAI10	  0	  0	  2
+EAI11	  4	  0	  2
+EAI12	  4	  0	  3
+age	36	28	24
+gender	Keine Angabe	Weiblich	Männlich
+faculty	Betriebswirtschaft	Wirtschafts- und Sozialwissenschaften	Wirtschafts- und Sozialwissenschaften
+degree	Magister	Master	Master
+income	5000	900	800

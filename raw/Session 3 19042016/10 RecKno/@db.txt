@@ -1,0 +1,28 @@
+O:\ztree1\160419_1215.xls
+160419_1215	1	summary	
+160419_1215	1	session	Subject	FinalProfit	ShowUpFee	ShowUpFeeInvested	MoneyAdded	MoneyToPay	MoneyEarned	
+160419_1215	1	session	1	7	0	0	0	7	7	
+160419_1215	1	session	2	6	0	0	0	6	6	
+160419_1215	1	session	3	5	0	0	0	5	5	
+160419_1215	1	session	4	5.5	0	0	0	5.5	5.5	
+160419_1215	1	session	5	6.5	0	0	0	6.5	6.5	
+160419_1215	1	session	6	5	0	0	0	5	5	
+160419_1215	1	session	7	7	0	0	0	7	7	
+160419_1215	1	session	8	3.5	0	0	0	3.5	3.5	
+160419_1215	1	session	9	7	0	0	0	7	7	
+160419_1215	1	session	10	6.5	0	0	0	6.5	6.5	
+160419_1215	1	session	11	7	0	0	0	7	7	
+160419_1215	1	session	12	6.9	0	0	0	6.9	6.9	
+160419_1215	1	session	13	6	0	0	0	6	6	
+160419_1215	1	session	14	3	0	0	0	3	3	
+160419_1215	1	session	15	7	0	0	0	7	7	
+160419_1215	1	session	16	7	0	0	0	7	7	
+160419_1215	1	session	17	6.5	0	0	0	6.5	6.5	
+160419_1215	1	session	18	7	0	0	0	7	7	
+160419_1215	1	session	19	6	0	0	0	6	6	
+160419_1215	1	session	20	5	0	0	0	5	5	
+160419_1215	1	session	21	7	0	0	0	7	7	
+160419_1215	1	session	22	6	0	0	0	6	6	
+160419_1215	1	session	23	5	0	0	0	5	5	
+160419_1215	1	session	24	6	0	0	0	6	6	
+160419_1215	1	session	25	7	0	0	0	7	7	

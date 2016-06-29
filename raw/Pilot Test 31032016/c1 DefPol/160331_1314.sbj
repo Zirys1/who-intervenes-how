@@ -1,0 +1,53 @@
+O:\ztree1\c1\160331_1314.sbj
+Subject	1	2	3	4	5
+client	EL-07	EL-11	EL-16	EL-23	EL-27
+knowSource	Nein	Nein	Nein	Nein	Nein
+payforInf	0.50	0	1	0	1
+belief	1	1	1	3.50	4
+pastRetire	Nein	Nein	Nein	Nein	Nein
+pastOffset	Nein	Nein	Nein	Nein	Nein
+reasonOffsetting					
+party	Keine Angabe	Die Linke	Andere	Keine Angabe	CDU/CSU
+sourceInterest	  3	  0	  3	  4	  4
+sourceKnow	  2	  1	  2	  3	  2
+persKnow	  1	  3	  1	  2	  2
+persInt	  2	  3	  3	  1	  4
+warmGlow	  3	  3	  2	  1	  4
+guilt	  3	  3	  1	  1	  2
+demandEffect	  3	  3	  1	  3	  0
+conformity	  1	  3	  0	  0	  1
+retireEffic	  1	  0	  2	  1	  4
+moral	  3	  0	  2	  0	  4
+trustPol	  1	  0	  0	  0	  2
+effPercept	  3	  0	  3	  1	  0
+reactance1	  3	  3	  1	  1	  4
+reactance2	  1	  3	  2	  3	  4
+reactance3	  2	  2	  2	  1	  3
+reactance 4	  3	  3	  2	  3	  2
+reactance5	  1	  3	  3	  2	  2
+reactance6	  1	  2	  2	  2	  1
+reactance7	  1	  1	  3	  2	  2
+reactance8	  1	  3	  3	  4	  3
+reactance9	  2	  3	  3	  3	  2
+reactance10	  0	  3	  2	  2	  1
+reactance11	  1	  3	  2	  1	  1
+EAI1	  3	  3	  4	  1	  4
+EAI2	  3	  3	  2	  2	  0
+EAI3	  1	  3	  3	  0	  2
+EAI4	  1	  3	  0	  0	  0
+EAI5	  1	  0	  3	  1	  1
+EAI6	  3	  4	  4	  3	  4
+EAI7	  1	  0	  4	  0	  1
+EAI8	  1	  2	  1	  2	  1
+EAI9	  3	  2	  3	  4	  1
+EAI10	  2	  2	  0	  3	  2
+EAI11	  3	  4	  3	  2	  4
+EAI12	  1	  0	  0	  2	  0
+age	22	21	24	25	21
+gender	Weiblich	Weiblich	Weiblich	Weiblich	Weiblich
+faculty	Wirtschafts- und Sozialwissenschaften	Mathematik, Informatik und Naturwissenschaften	Mathematik, Informatik und Naturwissenschaften	Erziehungswissenschaft	Wirtschafts- und Sozialwissenschaften
+degree	Bachelor	Bachelor	Bachelor	Master	Bachelor
+income	450	600	500	500	500
+notes			Ich hätte gern etwas mehr Zeit zum Lesen der Instruktionen gehabt.	war verständlich	
+believe1	Nein	Nein	Nein	Nein	Ja
+believe2	Ja	Ja	Ja	Nein	Ja

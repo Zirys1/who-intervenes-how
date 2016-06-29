@@ -1,0 +1,47 @@
+O:\ztree1\160412_1333.sbj
+Subject	1	2	3	4	5	6	7	8	9	10	11	12	13	14	15	16	17	18	19	20	21	22	23	24	25	26	27	28	29	30
+client	EL-01	EL-02	EL-03	EL-04	EL-05	EL-06	EL-07	EL-08	EL-09	EL-10	EL-11	EL-12	EL-13	EL-14	EL-15	EL-16	EL-17	EL-18	EL-19	EL-20	EL-21	EL-22	EL-23	EL-24	EL-25	EL-26	EL-27	EL-28	EL-29	EL-30
+payforInf	0	0	6	1	0	0	2	0	0	0.5	0	3.40	3	0	0	4	0	0	0	0	0	0	0.00	0	0	0	2	0	0	1
+belief	3	1	2	0.5	0	0	0.1	1	0.50	1.0	2	2	2	2	1.5	3	2	3	3	0.5	2	3.00	1.00	1	2	4.5	2	2	2	1
+pastRetire	Nein	Nein	Nein	Ja	Nein	Nein	Nein	Nein	Nein	Nein	Nein	Nein	Nein	Nein	Nein	Nein	Nein	Nein	Nein	Ja	Nein	Nein	Nein	Nein	Nein	Nein	Nein	Nein	Nein	Nein
+pastOffset	Nein	Nein	Nein	Ja	Ja	Ja	Nein	Nein	Nein	Nein	Nein	Nein	Nein	Nein	Nein	Nein	Nein	Ja	Ja	Ja	Nein	Nein	Nein	Nein	Ja	Nein	Ja	Nein	Ja	Nein
+reasonOffsetting				Zuschlag bei Fernbus, persönliches Engagement	Deutsche Bahn, Flugtickets, jeweils beim Ticketkauf.	Sowohl bei Bus als auch Flugreisen habe ich - sofern möglich - einen Aufschlag gezahlt. Auch durch das Mitnehmen anderer Leute im Fahrzeug gleicht man ja effektiv Emissionen aus, bzw. vermeidet zusätzliche. 												statt mit dem auto mit dem fahrrad fahren oder mit den Öffetnlichen 	Emossionsausgleich bei Bahnfahrt auf bahn.de	Busreisen-Aufschlag bei MeinFernbus					Flugreisen über atmosfair		Beim Reisen mit einem Fernbus.		bei busfahrten mache ich dies regelmäßig um CO2 neutral zu fahren\r\nabgesehen achte ich darauf produkte zu kaufen und konsumieren die möglichst CO2 neutral hergestellt wrerden (bzw bei denen extra CO2 rechte gehandelt wurden), dies mache ich nicht im übermaß denn ich bin ein armer studen (jaja ausrede^^)	
+party	Keine (Nichtwähler)	SPD	Die Linke	Bündnis90/Grüne	Bündnis90/Grüne	Die Linke	CDU/CSU	CDU/CSU	Keine (Nichtwähler)	Die Linke	Die Linke	Keine (Nichtwähler)	Andere	Bündnis90/Grüne	Keine (Nichtwähler)	Bündnis90/Grüne	CDU/CSU	SPD	Bündnis90/Grüne	CDU/CSU	Bündnis90/Grüne	Die Linke	Keine (Nichtwähler)	SPD	Die Linke	Keine (Nichtwähler)	Bündnis90/Grüne	FDP	FDP	SPD
+persKnow	  3	  4	  3	  3	  3	  3	  4	  3	  4	  4	  2	  3	  1	  1	  1	  2	  3	  4	  3	  2	  2	  3	  3	  2	  3	  4	  4	  3	  3	  2
+persInt	  1	  3	  3	  3	  4	  3	  2	  3	  0	  4	  3	  3	  2	  3	  2	  3	  3	  3	  3	  2	  3	  3	  2	  2	  3	  3	  3	  3	  3	  1
+warmGlow	  2	  2	  3	  2	  4	  3	  3	  2	  0	  3	  2	  3	  4	  3	  3	  4	  2	  3	  3	  2	  3	  4	  2	  3	  3	  2	  4	  2	  2	  3
+guilt	  1	  1	  3	  3	  3	  2	  0	  0	  0	  3	  0	  2	  0	  3	  3	  2	  3	  1	  2	  3	  2	  4	  1	  0	  3	  0	  2	  1	  2	  4
+demandEffect	  3	  2	  2	  0	  1	  1	  0	  2	  2	  0	  2	  1	  2	  3	  1	  1	  3	  0	  2	  1	  0	  4	  2	  4	  1	  1	  2	  0	  0	  0
+conformity	  0	  0	  1	  2	  0	  0	  0	  0	  0	  1	  0	  2	  0	  2	  1	  0	  1	  1	  1	  1	  0	  0	  2	  0	  0	  1	  0	  0	  1	  1
+retireEffic	  2	  0	  3	  3	  2	  3	  2	  1	  0	  3	  2	  3	  2	  2	  3	  2	  2	  2	  2	  2	  2	  2	  1	  2	  1	  0	  3	  1	  2	  3
+moral	  1	  3	  4	  3	  4	  3	  3	  0	  0	  3	  4	  3	  0	  3	  2	  3	  3	  2	  3	  2	  4	  4	  2	  0	  3	  1	  2	  2	  3	  3
+trustPol	  0	  1	  0	  1	  0	  0	  3	  0	  4	  1	  0	  2	  0	  2	  3	  1	  1	  1	  1	  2	  1	  1	  2	  3	  2	  0	  2	  2	  0	  3
+effPercept	  0	  0	  4	  3	  0	  1	  0	  0	  0	  0	  0	  3	  0	  0	  1	  2	  0	  3	  1	  1	  1	  0	  1	  4	  1	  0	  0	  0	  1	  3
+reactance1	  2	  4	  3	  3	  3	  4	  4	  4	  4	  4	  4	  2	  4	  1	  3	  3	  2	  4	  3	  3	  4	  4	  3	  4	  3	  2	  4	  4	  4	  3
+reactance2	  3	  4	  2	  3	  3	  4	  4	  4	  4	  4	  4	  3	  4	  1	  3	  2	  3	  4	  4	  3	  4	  4	  3	  4	  3	  2	  3	  4	  3	  4
+reactance3	  1	  3	  4	  3	  4	  4	  4	  3	  2	  3	  3	  2	  4	  4	  4	  1	  2	  2	  2	  4	  2	  4	  2	  4	  3	  4	  2	  2	  4	  4
+reactance 4	  0	  2	  3	  3	  2	  3	  4	  2	  4	  2	  2	  2	  3	  3	  2	  0	  1	  2	  3	  3	  3	  4	  1	  4	  1	  1	  2	  2	  4	  2
+reactance5	  2	  4	  1	  2	  2	  2	  4	  2	  3	  0	  2	  1	  1	  2	  2	  0	  1	  2	  2	  2	  2	  3	  2	  0	  1	  1	  2	  3	  4	  1
+reactance6	  0	  2	  0	  1	  0	  2	  4	  2	  4	  3	  2	  2	  1	  0	  1	  0	  0	  1	  1	  1	  1	  4	  1	  0	  1	  1	  1	  1	  3	  0
+reactance7	  1	  3	  1	  3	  2	  3	  3	  3	  4	  3	  4	  2	  3	  0	  3	  3	  2	  3	  3	  1	  3	  3	  3	  2	  1	  0	  3	  3	  2	  1
+reactance8	  0	  3	  4	  3	  2	  2	  4	  2	  4	  4	  2	  2	  2	  4	  3	  2	  1	  3	  3	  2	  2	  4	  2	  2	  1	  0	  2	  2	  4	  4
+reactance9	  1	  2	  2	  3	  0	  2	  4	  2	  4	  3	  2	  2	  3	  3	  1	  0	  2	  4	  1	  1	  0	  3	  1	  3	  1	  0	  2	  2	  3	  3
+reactance10	  0	  0	  1	  2	  0	  1	  1	  1	  4	  1	  1	  1	  0	  2	  1	  1	  2	  1	  0	  2	  2	  3	  2	  1	  0	  2	  1	  1	  1	  1
+reactance11	  0	  1	  1	  2	  0	  2	  1	  2	  4	  1	  1	  1	  0	  1	  1	  0	  2	  1	  0	  2	  0	  2	  2	  2	  0	  0	  2	  2	  2	  0
+EAI1	  4	  2	  4	  4	  3	  2	  4	  3	  3	  4	  4	  4	  1	  1	  3	  3	  3	  3	  1	  4	  2	  3	  2	  3	  4	  3	  3	  3	  4	  4
+EAI2	  1	  3	  0	  2	  2	  1	  2	  3	  4	  1	  0	  3	  3	  2	  2	  1	  2	  2	  2	  2	  1	  1	  1	  2	  0	  0	  2	  1	  2	  3
+EAI3	  0	  0	  4	  3	  3	  1	  2	  3	  0	  2	  3	  2	  2	  1	  1	  2	  1	  3	  1	  3	  2	  0	  2	  2	  3	  0	  1	  0	  1	  1
+EAI4	  2	  1	  2	  0	  0	  0	  0	  0	  0	  0	  1	  3	  1	  0	  0	  1	  1	  1	  0	  1	  0	  1	  1	  2	  0	  0	  0	  0	  0	  1
+EAI5	  1	  3	  1	  0	  2	  1	  0	  0	  4	  0	  2	  1	  4	  2	  1	  2	  1	  2	  1	  1	  3	  4	  2	  0	  1	  0	  1	  0	  0	  1
+EAI6	  4	  4	  4	  4	  4	  4	  2	  3	  4	  4	  4	  3	  4	  4	  3	  3	  3	  3	  3	  3	  3	  4	  2	  3	  4	  3	  3	  3	  4	  1
+EAI7	  1	  1	  1	  3	  4	  1	  0	  4	  4	  3	  4	  2	  3	  0	  3	  2	  1	  2	  1	  2	  2	  2	  1	  0	  3	  2	  4	  1	  4	  3
+EAI8	  1	  2	  1	  1	  0	  1	  0	  0	  1	  0	  1	  1	  1	  2	  3	  2	  1	  2	  1	  1	  1	  1	  1	  1	  1	  0	  0	  3	  1	  1
+EAI9	  2	  3	  3	  4	  4	  4	  0	  3	  4	  4	  4	  3	  4	  3	  2	  3	  3	  4	  3	  2	  3	  4	  2	  2	  3	  3	  4	  2	  4	  1
+EAI10	  2	  2	  1	  1	  0	  1	  2	  0	  3	  1	  0	  3	  2	  2	  1	  4	  1	  2	  2	  1	  1	  0	  3	  2	  1	  1	  0	  3	  1	  3
+EAI11	  3	  3	  4	  3	  4	  3	  3	  2	  3	  3	  3	  4	  3	  4	  3	  3	  3	  3	  3	  3	  2	  4	  3	  2	  3	  2	  3	  3	  3	  4
+EAI12	  0	  0	  0	  2	  0	  2	  2	  0	  0	  0	  0	  1	  0	  1	  4	  1	  0	  1	  0	  0	  2	  1	  1	  0	  2	  0	  3	  0	  4	  0
+age	23	25	28	27	30	34	28	26	39	27	25	27	24	29	29	33	28	23	23	20	39	22	24	27	26	26	24	22	26	23
+gender	Weiblich	Männlich	Weiblich	Männlich	Weiblich	Männlich	Männlich	Weiblich	Männlich	Männlich	Männlich	Weiblich	Weiblich	Weiblich	Weiblich	Weiblich	Weiblich	Männlich	Männlich	Männlich	Männlich	Männlich	Weiblich	Weiblich	Männlich	Männlich	Weiblich	Männlich	Männlich	Weiblich
+faculty	Mathematik, Informatik und Naturwissenschaften	Andere	Erziehungswissenschaft	Wirtschafts- und Sozialwissenschaften	Mathematik, Informatik und Naturwissenschaften	Wirtschafts- und Sozialwissenschaften	Wirtschafts- und Sozialwissenschaften	Rechtswissenschaft	Andere	Wirtschafts- und Sozialwissenschaften	Mathematik, Informatik und Naturwissenschaften	Betriebswirtschaft	Andere	Ich studiere nicht	Wirtschafts- und Sozialwissenschaften	Andere	Erziehungswissenschaft	Wirtschafts- und Sozialwissenschaften	Mathematik, Informatik und Naturwissenschaften	Psychologie und Bewegungswissenschaft	Ich studiere nicht	Rechtswissenschaft	Wirtschafts- und Sozialwissenschaften	Rechtswissenschaft	Wirtschafts- und Sozialwissenschaften	Mathematik, Informatik und Naturwissenschaften	Betriebswirtschaft	Betriebswirtschaft	Wirtschafts- und Sozialwissenschaften	Wirtschafts- und Sozialwissenschaften
+degree	Bachelor	Master	Master	Bachelor	Bachelor	Bachelor	Master	Staatsexamen	Diplom	Bachelor	Master	Bachelor	Bachelor	Sonstige	Bachelor	Bachelor	Master	Bachelor	Master	Bachelor	Diplom	Staatsexamen	Bachelor	Staatsexamen	Master	Master	Staatsexamen	Master	Bachelor	Master
+income	190	850	900	670	1000	800	1500	750	900	800	600	450	620	1300	450	450	600	400	900	200	1000	500	500	400	650	350	450	700	600	350

@@ -1,0 +1,30 @@
+O:\ztree2\160620_1318.xls
+160620_1318	1	summary	
+160620_1318	1	session	Subject	FinalProfit	ShowUpFee	ShowUpFeeInvested	MoneyAdded	MoneyToPay	MoneyEarned	
+160620_1318	1	session	1	5	0	0	0	5	5	
+160620_1318	1	session	2	5	0	0	0	5	5	
+160620_1318	1	session	3	5	0	0	0	5	5	
+160620_1318	1	session	4	3.5	0	0	0	3.5	3.5	
+160620_1318	1	session	5	7	0	0	0	7	7	
+160620_1318	1	session	6	2	0	0	0	2	2	
+160620_1318	1	session	7	4	0	0	0	4	4	
+160620_1318	1	session	8	5	0	0	0	5	5	
+160620_1318	1	session	9	4	0	0	0	4	4	
+160620_1318	1	session	10	6.5	0	0	0	6.5	6.5	
+160620_1318	1	session	11	1.5	0	0	0	1.5	1.5	
+160620_1318	1	session	12	6.9	0	0	0	6.9	6.9	
+160620_1318	1	session	13	7	0	0	0	7	7	
+160620_1318	1	session	14	7	0	0	0	7	7	
+160620_1318	1	session	15	7	0	0	0	7	7	
+160620_1318	1	session	16	5	0	0	0	5	5	
+160620_1318	1	session	17	6	0	0	0	6	6	
+160620_1318	1	session	18	5	0	0	0	5	5	
+160620_1318	1	session	19	6	0	0	0	6	6	
+160620_1318	1	session	20	6	0	0	0	6	6	
+160620_1318	1	session	21	5	0	0	0	5	5	
+160620_1318	1	session	22	7	0	0	0	7	7	
+160620_1318	1	session	23	7	0	0	0	7	7	
+160620_1318	1	session	24	5	0	0	0	5	5	
+160620_1318	1	session	25	3.5	0	0	0	3.5	3.5	
+160620_1318	1	session	26	6.9	0	0	0	6.9	6.9	
+160620_1318	1	session	27	5	0	0	0	5	5	
