@@ -1,7 +1,7 @@
 rm(list=ls())
 Sys.setenv(LANG = "en")
-setwd("Z:/Projects/R Projects/Who intervenes how/data")
-load("Data_27062016.RData")
+setwd("Z:/Projects/R Projects/who-intervenes-how/data")
+load("Data_04072016.RData")
 library(ggplot2) # Create plots and graphics
 library(psych) # Especially to use describeBy
 library(plyr)
