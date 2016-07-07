@@ -79,12 +79,14 @@ mfv(df$Donated) # 1
 mfv(df$belief) # 2
 
 ##### Distribution of Donation variable ####
-ggplot(df, aes(x = Donation)) +
-geom_histogram() + 
-stat_bin(binwidth = .1) +
-  ggtitle("Frequency of Donation values") +
-  xlab("Donation amount") +
-  ylab("Frequency")
+ggplot(data = df, aes(x = Donation)) +
+  geom_histogram(binwidth = .1) +
+  scale_y_continuous(breaks = c(0, 25, 50, 75, 100, 125, 150)) +
+  scale_x_continuous(breaks = c(0, 1, 2,3,4,5,6,7,8))+
+  geom_vline(xintercept = 5, linetype = "dashed") +
+  xlab("Contribution (in €)") +
+  ylab("Number of observations")
+
 
 ##### Distribution of Donation variable by treatment ####
 df.n <- data.frame(c(1:11), c(1:11))

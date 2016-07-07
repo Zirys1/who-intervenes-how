@@ -1,0 +1,792 @@
+---
+title: "Data Analysis_HB_28042016"
+author: "Hendrik Bruns"
+date: "28th April 2016"
+output: pdf_document
+---
+
+```{r, message=FALSE, echo=FALSE}
+setwd("Z:/Projects/Who intervenes/Experiment/Data")
+load("Data_27042016.RData")
+```
+```{r, echo=FALSE, error=FALSE, include=FALSE}
+library(ggplot2)
+library(psych)
+library(plyr)
+library(gmodels)
+library(modeest)
+```
+
+# Descriptive Statistics
+Following are relevant aggregated statistics and statistics by each of the 11 treatments for each of three relevant dependent variables. These relevant dependent variables are
+1. Donation, which is the amount the subject donated in order to retire emission rights
+2. Donated, which is equal to 1 if the subject donated a positive amount, and 0 otherwise
+3. Belief, which is the amount the subject thinks other participants in this experiment donated on average (not incentivized)
+
+## 1. Variable: Donation to retire carbon licenses
+### Aggregated descriptive statistics
+```{r, echo=FALSE}
+summary(df$Donation)
+sd(df$Donation)
+```
+
+### Distribution of aggregated donations
+```{r, echo=FALSE, message=FALSE} 
+ggplot(df, aes(x = Donation)) +
+geom_histogram() + 
+stat_bin(binwidth = 1) +
+  ggtitle("Frequency of Donation values") +
+  xlab("Donation amount") +
+  ylab("Frequency")
+```
+
+#### Distribution of aggregated donations with normal curve
+```{r, echo = FALSE}
+x <- df$Donation
+h <- hist(x, breaks=10, col = "red", xlab = "Donation amount")
+xfit <- seq(min(x), max(x), length = 40)
+yfit <- dnorm(xfit, mean = mean(x), sd = sd(x))
+yfit <- yfit*diff(h$mids[1:2])*length(x)
+lines(xfit, yfit, col = "black", lwd = 2)
+```
+
+#### Kernel density plot of aggregated donations
+```{r, echo = FALSE}
+plot(density(df$Donation))  # Kerneldichteschätzer
+```
+
+#### Distribution of donations by treatment
+```{r, echo=FALSE, message=FALSE}
+describeBy(df$Donation, df$treatment)
+
+df.n <- data.frame(c(1:11), c(1:11))
+colnames(df.n)[1] <- "treatment"
+colnames(df.n)[2] <- "V1"
+df.n$V1[1] <- paste0("n==", length(df$treatment[df$treatment == "Control"]))
+df.n$V1[2] <- paste0("n==", length(df$treatment[df$treatment == "RecNos"]))
+df.n$V1[3] <- paste0("n==", length(df$treatment[df$treatment == "DefNos"]))
+df.n$V1[4] <- paste0("n==", length(df$treatment[df$treatment == "RecNap"]))
+df.n$V1[5] <- paste0("n==", length(df$treatment[df$treatment == "DefNap"]))
+df.n$V1[6] <- paste0("n==", length(df$treatment[df$treatment == "RecPol"]))
+df.n$V1[7] <- paste0("n==", length(df$treatment[df$treatment == "DefPol"]))
+df.n$V1[8] <- paste0("n==", length(df$treatment[df$treatment == "RecPar"]))
+df.n$V1[9] <- paste0("n==", length(df$treatment[df$treatment == "DefPar"]))
+df.n$V1[10] <- paste0("n==", length(df$treatment[df$treatment == "RecKno"]))
+df.n$V1[11] <- paste0("n==", length(df$treatment[df$treatment == "DefKno"]))
+df.n$treatment <- as.factor(as.character(df.n$treatment))
+df.n$treatment <- factor(df.n$treatment, levels = c(1,2,3,4,5,6,7,8,9,10,11), labels=c("Control", "RecNos", "DefNos", "RecNap", "DefNap", "RecPol", "DefPol", "RecPar", "DefPar", "RecKno", "DefKno")) 
+
+ggplot(data=df, aes(x=Donation, color=treatment)) +
+  facet_wrap(~treatment) +
+  stat_bin(binwidth = .1) +
+  geom_text(data=df.n, aes(x=5, y = 10, label=V1), parse=TRUE) +
+  ggtitle("Frequency of Donation values by treatment") +
+  xlab("Donation amount") +
+  ylab("Frequency")
+```
+
+### Donations by treatment (Boxplot)
+*Red diamonds in boxplots represent the respective means*
+
+```{r, echo=FALSE}
+# generate dataframe with Donation average for each treatment
+ggplot(df, aes(treatment, Donation)) +
+  geom_boxplot() +
+  stat_summary(fun.y = mean, colour="darkred", geom="point", shape=18, size=3)
+```
+
+### Donations by aggregated treatment (Boxplot), i.e. Def vs. Rec vs. Control
+```{r}
+describeBy(df$Donation, df$RecvsDef)
+```
+```{r, echo=FALSE}
+ggplot(df, aes(as.factor(RecvsDef), Donation)) +
+  geom_boxplot() +
+  stat_summary(fun.y = mean, colour="darkred", geom="point", shape=18, size=3)
+```
+
+### Donations by Reactance score 
+The reactance score was constructed by changing each of the 11 rectance-items to a dummy variable equal to 1 if the subject chose 3 or 4 on the respective item, and 0 otherwise. Afterwards, all 11 dummies were added to construct an ordinal Reactance score.
+
+Shows a point plot (not jittered) with Donation amount and the respective Reactance score of each participant. Includes a linear regression line, including the 95% confidence region, of the Reactance score as a predictor for the Donation amount.
+
+```{r, echo=FALSE}
+ggplot(data=df, aes(x = Reactance, y = Donation)) +
+  geom_point() +
+  geom_smooth(method=lm)
+```
+
+To see how often combinations of Reactance and Donation scores appeared
+
+```{r, echo = FALSE}
+y <- df$Donation
+x <- df$Reactance
+freqData <- as.data.frame(table(df$Donation, df$Reactance))
+plot(as.numeric(as.vector(df$Reactance)), 
+     as.numeric(as.vector(df$Donation)), 
+     pch = 21, col = "black", bg = "lightblue",
+     cex = .07 * freqData$Freq, xlab = "Reactance", ylab = "Donation")
+
+abline(mean(y) - mean(x) * cor(y, x) * sd(y) / sd(x), #intercept
+       sd(y) / sd(x) * cor(y, x),  #slope
+       lwd = 3, col = "red")
+```
+
+#### Donations by Reactance score per treatment
+Shows a point plot (not jittered) with Donation amount and the respective Reactance score of each participant, for each treatment. Includes a linear regression line, including the 95% confidence region, of the Reactance score as a predictor for the Donation amount, for each treatment.
+
+```{r, echo=FALSE} 
+ggplot(data=df, aes(x = Reactance, y = Donation, color = treatment)) +
+  facet_wrap(~treatment) +
+  geom_point() +
+  geom_text(data=df.n, aes(x=5, y=10, label=V1), parse=TRUE)+
+  geom_smooth(method=lm)
+```
+
+### Donations by EAI score
+The EAI score was constructed by changing each of the 12 EAI-items to a dummy variable equal to 1 if the subject chose 3 or 4 on the respective item, and 0 otherwise. Afterwards, all 12 dummies were added to construct an ordinal EAI score.
+
+Shows a point plot (not jittered) with Donation amount and the respective EAI score of each participant. Includes a linear regression line, including the 95% confidence region, of the EAI score as a predictor for the Donation amount.
+
+```{r, echo=FALSE}
+ggplot(data=df, aes(x = EAI, y = Donation)) +
+  geom_point() +
+  geom_smooth(method=lm)
+```
+
+#### Donations by EAI score per treatment
+Shows a point plot (not jittered) with Donation amount and the respective EAI score of each participant, for each treatment. Includes a linear regression line, including the 95% confidence region, of the EAI score as a predictor for the Donation amount, for each treatment.
+
+```{r, echo=FALSE} 
+ggplot(data=df, aes(x = EAI, y = Donation, color = treatment)) +
+  facet_wrap(~treatment) +
+  geom_point() +
+  geom_text(data=df.n, aes(x=5, y=10, label=V1), parse=TRUE) +
+  geom_smooth(method=lm)
+```
+
+## 2. Variable: Donation dummy (1 if donated, 0 otherwise)
+### Aggregated descriptive statistics
+```{r}
+summary(df$Donated)
+```
+
+### Distribution of donation dummy by treatment
+```{r}
+table(df$Donated, df$treatment)
+```
+
+### Decision to donate by treatment graph
+```{r, echo=FALSE}
+ggplot(data = df, aes(x = Donated, color = treatment)) +
+  geom_bar() +
+  facet_wrap(~treatment) +
+  geom_text(data=df.n, aes(x=1, y=20, label=V1), parse=TRUE) +
+  theme(axis.text.x = element_text(angle = 90, vjust=.8, size=10))
+```
+
+```{r, echo=FALSE}
+df.n1 <- data.frame(c(1:3), c(1:3))
+colnames(df.n1)[1] <- "RecvsDef"
+colnames(df.n1)[2] <- "V1"
+df.n1$V1[1] <- paste0("n==", length(df$RecvsDef[df$Intervention == "Recommendation"]))
+df.n1$V1[2] <- paste0("n==", length(df$RecvsDef[df$Intervention == "Default"]))
+df.n1$V1[3] <- paste0("n==", length(df$RecvsDef[df$RecvsDef == is.na(df$RecvsDef)]))
+df.n1$RecvsDef <- as.factor(as.character(df.n1$RecvsDef))
+df.n1$RecvsDef <- factor(df.n1$RecvsDef, levels = c(1,2,3), labels=c("Rec", "Def", NA)) 
+
+ggplot(data = df, aes(x = Donated, color = RecvsDef)) +
+  geom_bar() +
+  facet_wrap(~RecvsDef) +
+  geom_text(data=df.n1, aes(x=1, y=60, label=V1), parse=TRUE)
+```
+
+### Decision to donate by Reactance score
+```{r, echo=FALSE}
+i <- aggregate(df$Donatedm, list(df$Reactance), sum ) # this does not take into account how many observations are in each Reactance score, so I should divide by this in order to get ratios
+n <- aggregate(df$Donated, list(df$Reactance), length) # number of observations in each Reactance score category
+ni <- cbind(i, n)
+ni <- ni[, -3]
+ni$ratio <- ni$x/ni$x.1 # Fraction of people that donated in each Reactance score category
+ggplot(data = ni, aes(x = Group.1, y = ratio)) +
+  geom_bar(stat = "identity") +
+  ylab("Fraction of people with resp. Reactance score that donated") +
+  xlab("Reactance score")
+```
+```{r}
+chisq.test(table(df$Donated, df$Reactance))
+```
+
+### Decision to donate by Reactance score and treatment
+```{r, echo=FALSE}
+l <- aggregate(df$Donatedm, list(df$Reactance, df$treatment), sum) #numbers that donated in each group
+k <- aggregate(df$Donated, list(df$Reactance, df$treatment), length) # amount of observations in each group
+lk <- cbind(l, k)
+lk <- lk[, -c(4,5)]
+lk$ratio <- lk$x/lk$x.1
+ggplot(data = lk, aes(x = Group.1, y = ratio, color = Group.2)) +
+  facet_wrap(~Group.2) +
+  geom_bar(stat = "identity") +
+  ylab("Fraction of people with resp. Reactance score that donated") +
+  xlab("Reactance score")
+```
+*At least visually there does not seem to be a relationship of Reactance score and Donation broken down by treatment.*
+
+### Decision to donate by EAI score
+```{r, echo=FALSE}
+f <- aggregate(df$Donatedm, list(df$EAI), sum ) # this does not take into account how many observations are in each EAI score, so I should divide by this in order to get ratios
+g <- aggregate(df$Donated, list(df$EAI), length) # number of observations in each Reactance score category
+fg <- cbind(f, g)
+fg <- fg[, -3]
+fg$ratio <- fg$x/fg$x.1 # Fraction of people that donated in each Reactance score category
+ggplot(data = fg, aes(x = Group.1, y = ratio)) +
+  geom_bar(stat = "identity") +
+  ylab("Fraction of people with resp. EAI score that donated") +
+  xlab("EAI score")
+# would also be nice to see the respective n= in each bar
+```
+```{r}
+chisq.test(table(df$Donated, df$EAI))
+```
+*The Chi²-test statistic is not significant, indicating that the decision whether or not to donate anything does not depend on the EAI.*
+
+### Decision to donate by EAI score and treatment
+```{r, echo=FALSE}
+h <- aggregate(df$Donatedm, list(df$EAI, df$treatment), sum) #numbers that donated in each group
+i <- aggregate(df$Donated, list(df$EAI, df$treatment), length) # amount of observations in each group
+hi <- cbind(h, i)
+hi <- hi[, -c(4,5)]
+hi$ratio <- hi$x/hi$x.1
+ggplot(data = hi, aes(x = Group.1, y = ratio, color = Group.2)) +
+  facet_wrap(~Group.2) +
+  geom_bar(stat = "identity") +
+  ylab("Fraction of people with resp. EAI score that donated") +
+  xlab("EAI score")
+```
+
+## 3. Variable: Beliefs about other participants donations
+### Aggregated descriptive statistics
+```{r}
+summary(df$belief)
+```
+
+### Distribution of aggregated beliefs about donations
+```{r, echo=FALSE, message=FALSE} 
+ggplot(df, aes(x = belief)) +
+geom_histogram() + 
+stat_bin(binwidth = .1) +
+  ggtitle("Frequency of beliefs about others' donations") +
+  xlab("Belief") +
+  ylab("Frequency")
+```
+
+#### Distribution of beliefs by treatment
+```{r, echo=FALSE, message=FALSE}
+describeBy(df$belief, df$treatment)
+ggplot(data=df, aes(x=belief, color=treatment)) +
+  facet_wrap(~treatment) +
+  stat_bin(binwidth = .1) +
+  geom_text(data=df.n, aes(x=4, y = 10, label=V1), parse=TRUE) +
+  ggtitle("Frequency of beliefs about others donations by treatment") +
+  xlab("Belief") +
+  ylab("Frequency")
+```
+
+### Beliefs by treatment (Boxplot)
+```{r, echo=FALSE}
+ggplot(df, aes(treatment, belief)) +
+  geom_boxplot() +
+  stat_summary(fun.y = mean, colour="darkred", geom="point", shape=18, size=3)
+```
+
+
+# Inferential Statistics
+Following are relevant inferential statistics for each of three relevant dependent variables. These relevant dependent variables are
+1. Donation, which is the amount the subject donated in order to retire emission rights
+2. Donated, which is equal to 1 if the subject donated a positive amount, and 0 otherwise
+3. Belief, which is the amount the subject thinks other participants in this experiment donated on average (not incentivized)
+
+## 1. Variable: Donation to retire carbon licenses
+### Kruskal-Wallis-Test
+The following KW-test tests the null-hypothesis that the median donations in each treatment are the same. 
+The test assumes variance homogeneity and equal distributions of donations in each treatment. It basically tests whether the distributions from the different treatments are shifted.
+
+```{r}
+kruskal.test(df$Donation ~ df$treatment)
+```
+
+*We do not reject the null (p = .05).*
+
+### ANOVA (one-way)
+```{r}
+summary(aov(df$Donation ~ df$treatment))
+```
+
+*We do not reject the null (p = .05).*
+
+## 2. Variable: Donation dummy (1 if donated, 0 otherwise)
+### Chi² Test
+The following Chi²-test tests the null-hypothesis that whether or not a participant decides to donate anything to retire emission rights (extensive margin) is independent of the treatments.
+
+```{r}
+table(df$Donated, df$treatment)
+chisq.test(table(df$Donated, df$treatment))
+```
+
+*We fail to reject the null (p = .05)*
+
+## 3. Variable: Beliefs about other participants donations
+### Kruskal-Wallis Test
+The following KW-test tests the null-hypothesis that the median beliefs about other participants average donations in each treatment are the same. 
+The test assumes variance homogeneity and equal distributions of donations in each treatment. It basically tests whether the distributions from the different treatments are shifted.
+
+```{r}
+kruskal.test(df$belief ~ df$treatment)
+```
+
+*We do not reject the null. The beliefs about other participants donation amounts do not differ significantly between the treatments.*
+
+
+# Test of hypotheses from the working paper
+
+## H0a
+Mean and median payments to retire carbon licenses in the control condition are close to zero.
+
+*H0: Average Donations = 0*
+*HA: Average Donations >< 0*
+```{r}
+t.test(df$Donation, mu = 0)
+wilcox.test(df$Donation, mu = 0)
+```
+
+*We reject the null that Donations are equal to 0*
+
+## H0b
+The share of subjects whose payments correspond to the recommended, respectively defaulted payment-value (convergence) is higher than in the control condition. Additionally, we expect that the share of subjects converging to the default is higher than the share converging to the recommendation.
+
+### Aggregated donations in recommendation treatments > donations in control group
+```{r}
+describeBy(df$Donation, df$RecvsC)
+t.test(df$Donation ~ df$RecvsC)
+wilcox.test(df$Donation ~ df$RecvsC)
+```
+*We cannot reject the null that Donations in recommendation treatments are equal to donations in control condition.*
+
+### Aggregated donations in default treatments > donations in control group
+```{r}
+describeBy(df$Donation, df$DefvsC)
+t.test(df$Donation ~ df$DefvsC)
+wilcox.test(df$Donation ~ df$DefvsC)
+```
+*We cannot reject the null that Donations in default treatments are equal to donations in control condition.*
+
+### Aggregated donations in default treatments > donations in recommendation treatments
+```{r}
+describeBy(df$Donation, df$RecvsDef)
+t.test(df$Donation ~ df$RecvsDef)
+wilcox.test(df$Donation ~ df$RecvsDef)
+```
+*We cannot reject the null that Donations in default treatments are equal to donations in recommendation treatments.*
+
+## H0c
+The share of subjects converging to the recommended, respectively defaulted payment-values in the name and picture condition is higher than in the neutral source-condition.
+
+### For Recommendations: Donations in Name and Picture treatments > Donations in No-Source treatments
+```{r}
+describeBy(df$Donation, df$RecNapvsRecNos)
+t.test(df$Donation ~ df$RecNapvsRecNos)
+wilcox.test(df$Donation ~ df$RecNapvsRecNos)
+```
+*We cannot reject the null that Donations in recommendation treatments informing about the name and picture of the source are equal to donations in recommendation treatments providing no information about the source of the recommendation.*
+
+### For Defaults: Donations in Name and Picture treatments > Donations in No-Source treatments
+```{r}
+describeBy(df$Donation, df$DefNapvsDefNos)
+t.test(df$Donation ~ df$DefNapvsDefNos)
+wilcox.test(df$Donation ~ df$DefNapvsDefNos)
+```
+*We cannot reject the null that Donations in default treatments informing about the name and picture of the source are equal to donations in default treatments providing no information about the source of the default.*
+
+## H1
+A subject's reaction towards the respective intervention ~~depends on~~ is predicted by trait reactance.
+
+*The following are not rigurous tests of the respective hypotheses, but rather approaches to get an idea about relationships and predictions.*
+
+```{r, echo=FALSE} 
+ggplot(data=df, aes(x = Reactance, y = Donation, color = treatment)) +
+  facet_wrap(~treatment) +
+  geom_point() +
+  geom_text(data=df.n, aes(x=5, y=10, label=V1), parse=TRUE)+
+  geom_smooth(method=lm) +
+  ggtitle(expression(atop("Relation between Donation and Reactance score", atop(italic("conditional on treatment"),""))))
+```
+
+### H1a
+A subject that scores high on trait reactance is less likely to converge to the recommended and defaulted payment-values, than a subject scoring low on trait reactance.
+*The following treats the Reactance score as metric.*
+
+```{r, echo=FALSE} 
+ggplot(data=df, aes(x = Reactance, y = Donation, color = RecvsDef)) +
+  facet_wrap(~RecvsDef) +
+  geom_point() +
+  geom_smooth(method=lm) +
+  ggtitle(expression(atop("Relation between Donation and Reactance score", atop(italic("resp. for Rec and Def treatment groups"),""))))
+```
+
+### H1b
+A subject that scores high on trait reactance is less likely to converge to the defaulted than to the recommended payment-value. 
+
+```{r, echo=FALSE} 
+ggplot(data=df, aes(x = Reactance, y = Donation, color = RecvsDef)) +
+  facet_wrap(~RecvsDef) +
+  geom_point() +
+  geom_smooth(method=lm) +
+  ggtitle(expression(atop("Relation between Donation and Reactance score", atop(italic("resp. for Rec and Def treatment groups"),""))))
+```
+*Left is recommendation group, middle is default group, right is Control.*
+
+## H2
+The share of subjects converging to the recommended, respectively defaulted payment-values in the condition informing about the academic degree of the source is higher than in the name and picture condition.
+
+### For Recommendations: Donations in Knowledge treatments > Donations in Name and Picture treatments
+```{r}
+describeBy(df$Donation, df$RecNapvsRecKno)
+t.test(df$Donation ~ df$RecNapvsRecKno)
+wilcox.test(df$Donation ~ df$RecNapvsRecKno)
+```
+
+### For Defaults: Donations in Knowledge treatments > Donations in Name and Picture treatments
+```{r}
+describeBy(df$Donation, df$DefNapvsDefKno)
+t.test(df$Donation ~ df$DefNapvsDefKno)
+wilcox.test(df$Donation ~ df$DefNapvsDefKno)
+```
+
+## H3-1
+The share of subjects converging to the recommended, respectively defaulted payment-values in the condition informing about the political characteristic of the source is lower than in the name and picture condition.
+
+### For Recommendations: Donations in Political treatments < Donations in Name and Picture treatments
+```{r}
+describeBy(df$Donation, df$RecNapvsRecPol)
+t.test(df$Donation ~ df$RecNapvsRecPol)
+wilcox.test(df$Donation ~ df$RecNapvsRecPol)
+```
+*We cannot reject the null that Donations in recommendation treatments informing about the political mandate of the source are equal to donations in recommendations treatments providing the name and picture of the source.*
+
+### For Defaults: Donations in Political treatments < Donations in Name and Picture treatments
+```{r}
+describeBy(df$Donation, df$DefNapvsDefPol)
+t.test(df$Donation ~ df$DefNapvsDefPol)
+wilcox.test(df$Donation ~ df$DefNapvsDefPol)
+```
+*We cannot reject the null that donations in default treatments informing about the political mandate of the source are equal to donations in default treatments providing the name and picture of the source.*
+
+## H3-2
+When the source is political the share of subjects converging to the default is lower than the share of subjects converging to the recommendation.
+
+### Donations in default treatments informing about the political characteristics of the source < donations in recommendation treatments informing about the political characteristics of the source
+```{r}
+describeBy(df$Donation, df$RecPolvsDefPol)
+t.test(df$Donation ~ df$RecPolvsDefPol)
+wilcox.test(df$Donation ~ df$RecPolvsDefPol)
+```
+*We cannot reject the null that donations in default treatments informing about the political characteristics of the source are equal to donations in recommendation treatments informing about the political characteristics of the source.*
+
+### H3a (HERE ALSO INCLUDE PARTY TREATMENTS, NOT JUST POLITICAL?)
+A subject that scores high on trust in politics is more likely to converge to the recommended and defaulted payment-values, than a subject scoring low on trust in politics. *In treatments informing about the political characteristics of the source.*
+
+```{r, echo=FALSE} 
+ggplot(data=df, aes(x = trustPolD, y = Donation, color = RecPolvsDefPol)) +
+  facet_wrap(~RecPolvsDefPol) +
+  geom_jitter() +
+  ggtitle(expression(atop("Relationship between trust in politics dummy and Donation", atop(italic("resp. for RecPol and DefPol treatment groups"),""))))
+
+wilcox.test(df$Donation ~ df$trustPolD)
+```
+*Problem is that there are not enough observations with high trust in politics (no observation in Default x Political treatment.*
+
+### H3b
+A subject that values conformity, i.e. doing what the majority does, is more likely to converge to the recommended and defaulted payment-values, than a subject that does not value conformity. 
+
+```{r, echo=FALSE} 
+ggplot(data=df, aes(x = conformityD, y = Donation, color = RecPolvsDefPol)) +
+  facet_wrap(~RecPolvsDefPol) +
+  geom_jitter() +
+  ggtitle(expression(atop("Relationship between conformity dummy and Donation", atop(italic("resp. for RecPol and DefPol treatment groups"),""))))
+
+wilcox.test(df$Donation ~ df$conformityD)
+```
+*Problem is that there are not enough observations with high trust in politics.*
+
+## H4
+The share of subjects converging to the recommended, respectively defaulted payment-values, relative to the political-characteristic condition, is higher for subjects with same party preferences, and lower for subjects with different party preferences.
+**Hypothesis is possibly phrased wrongly.**
+
+```{r}
+table(df$party)
+table(df$party, df$treatment)
+chisq.test(table(df$party, df$treatment))
+```
+
+```{r, echo=FALSE} 
+table(df$green,df$treatment)
+table(df$green, df$RecParvsDefPar)
+```
+
+```{r, echo=FALSE}
+ggplot(data = df, aes(x = green, y = Donation, color = RecParvsDefPar)) +
+  facet_grid(~RecParvsDefPar) +
+  geom_jitter()
+```
+
+# Further Statistics and Tests
+
+## Compare observations that believe we cooperated with Julia Verlinden vs. those who don't
+### Variable: Donation amount
+```{r, echo=FALSE}
+describeBy(df$Donation, df$believe2)
+
+t.test(df$Donation ~ df$believe2)
+wilcox.test(df$Donation ~ df$believe2)
+```
+*Participants who believe we cooperated with Julia Verlinden have a **lower** mean Donation, and also a **lower** variance. The difference is significant (p < .1) judged by the Welch Two Sample t-test, but insignificant judged by the Wilcoxon-Mann-Whitney-U test.*
+
+### Variable: Decision to donate
+```{r, echo=FALSE}
+table(df$Donated, df$believe2)
+```
+```{r}
+chisq.test(table(df$Donated, df$believe2))
+```
+*The Chi²-Test is not significant. This implies that the decision whether or not to contribute anything vs. nothing is not dependent on the answer to the question whether the respondent believed that we really cooperated with Julia Verlinden.*
+
+## Decision to donate for subjects seeing a recommendation vs. subjects seeing a default, irrespective of source
+```{r}
+table(df$Donated, df$RecvsDef)
+chisq.test(table(df$Donated, df$RecvsDef))
+```
+*The Chi²-Test is not significant. This implies that the decision whether or not to contribute anything vs. nothing is not dependent on whether the subjects encountered a recommendation or a default value with our without any specific source or information on the source.*
+
+## Decision to donate for subjects seeing a recommendation vs. subjects seeing a default, with non-political source-information
+```{r, echo=FALSE}
+df$RecvsDefNonPolPar <- ifelse((df$Intervention == "Recommendation" & df$Sourcetype != "Political" & df$Sourcetype != "Partisan"), 0, ifelse((df$Intervention == "Default" & df$Sourcetype != "Political" & df$Sourcetype != "Partisan"), 1, NA))
+df$RecvsDefNonPolPar <- as.factor(as.character(df$RecvsDefNonPolPar))
+df$RecvsDefNonPolPar <- factor(df$RecvsDefNonPolPar, levels = c(0,1), labels = c("Non-political/partisan Rec", "Non-political/partisan Def"))
+table(df$Donated, df$RecvsDefNonPolPar)
+chisq.test(table(df$Donated, df$RecvsDefNonPolPar))
+```
+*The Chi²-Test is not significant. This implies that the decision whether or not to contribute anything vs. nothing is not dependent on whether the subjects encountered a non-political or non-partisan recommendation or a respective default value.*
+
+## Decision to donate for subjects seeing an intervention without source-information vs. some source-information
+
+```{r, echo=FALSE}
+table(df$Donated, df$NosvsSome)
+chisq.test(table(df$Donated, df$NosvsSome))
+
+
+o <- aggregate(df$Donatedm, list(df$NosvsSome), sum)
+o$n <- aggregate(df$Donated, list(df$NosvsSome), length)
+o$ratio <- o$x/o$n
+ggplot(data = o, aes(x = Group.1, y = ratio[[2]])) +
+  geom_bar(stat = "identity") +
+  xlab("Source?") +
+  ylab("Fraction of participants donating")
+```
+*The Chi² test is significant (p < .1). This implies that the decision whether or not to contribute or not depends on whether or not some source-information vs. no source-information is provided.*
+
+## Graphs in order to see potential interactions
+```{r, echo=FALSE, message=FALSE}
+p <- aggregate(df$Donation, list(df$Intervention, df$Sourcetype), mean)
+p$sd <- aggregate(df$Donation, list(df$Intervention, df$Sourcetype), sd)
+p$n <- aggregate(df$Donation, list(df$Intervention, df$Sourcetype), length)
+p$se <- p$sd[[3]]/(sqrt(p$n[[3]]))
+limits <- aes(ymax = p$x + p$se, ymin = p$x - p$se)
+dodge <- position_dodge(width=.9)
+ggplot(data = p, aes(x = Group.1, y = x, colour = Group.1)) +
+  facet_grid(~Group.2) +
+  geom_bar(stat = "identity", position=dodge) +
+  geom_errorbar(limits, position=dodge, width=.25) +
+  xlab("Intervention type") +
+  ylab("Average Donation") +
+  theme(axis.text.x = element_text(angle = 45, vjust=.5, size=10))
+  
+
+p <- aggregate(df$Donatedm, list(df$Intervention, df$Sourcetype), sum)
+p$n <- aggregate(df$Donated, list(df$Intervention, df$Sourcetype), length)
+p$fraction <- p$x/p$n
+ggplot(data = p, aes(x = Group.1, y = fraction[[3]], color = Group.1)) +
+  facet_grid(~Group.2) +
+  geom_bar(stat = "identity") +
+  ylab("Fraction of participants donating") +
+  xlab("Intervention type")+
+  theme(axis.text.x = element_text(angle = 45, vjust=.5, size=10))
+
+
+p <- aggregate(df$Donation, list(df$Intervention, df$Sourcetype), mean)
+ggplot(data = p, aes(x = Group.2, y = x, color = Group.1)) +
+  facet_grid(~Group.1) +
+  geom_bar(stat = "identity") +
+  ylab("Average Donation") +
+  xlab("Source type") +
+  theme(axis.text.x = element_text(angle = 90, vjust=.8, size=10))
+
+
+p <- aggregate(df$Donatedm, list(df$Intervention, df$Sourcetype), sum)
+p$n <- aggregate(df$Donated, list(df$Intervention, df$Sourcetype), length)
+p$fraction <- p$x/p$n
+ggplot(data = p, aes(x = Group.2, y = fraction[[3]], color = Group.1)) +
+  facet_grid(~Group.1) +
+  geom_bar(stat = "identity") +
+  ylab("Fraction of participants donating") +
+  xlab("Source type") +
+  theme(axis.text.x = element_text(angle = 90, vjust=.8, size=10))
+
+
+# Now I want that Nos vs. Somesource
+q <- aggregate(df$Donatedm, list(df$NosvsSome, df$Intervention), sum)
+q$n <- aggregate(df$Donated, list(df$NosvsSome, df$Intervention), length)
+q$fraction <- q$x/q$n
+ggplot(data = q, aes(x = Group.1, y = fraction[[3]], color = Group.2)) +
+  facet_grid(~Group.2) +
+  geom_bar(stat = "identity")+
+  ylab("Fraction of participants donating") +
+  xlab("Source type")
+
+q <- aggregate(df$Donation, list(df$NosvsSome, df$Intervention), mean)
+q$sd <- aggregate(df$Donation, list(df$NosvsSome, df$Intervention), sd)
+q$n <- aggregate(df$Donation, list(df$NosvsSome, df$Intervention), length)
+q$se <- q$sd[[3]]/(sqrt(q$n[[3]]))
+limits <- aes(ymax = q$x + q$se, ymin = q$x - q$se)
+dodge <- position_dodge(width=.9)
+ggplot(data = q, aes(x = Group.1, y = x, color = Group.2)) +
+  facet_grid(~Group.2) +
+  geom_bar(stat = "identity", position=dodge) +
+  geom_errorbar(limits, position=dodge, width=.25) +
+  ylab("Average donation") +
+  xlab("Source type")
+```
+
+# Gender differences (by treatment)
+```{r, echo=FALSE}
+describeBy(df$Donation, df$gender)
+dfsub <- df[df$gender != "Keine Angabe",] 
+t.test(dfsub$Donation ~ dfsub$gender)
+wilcox.test(dfsub$Donation ~ dfsub$gender)
+
+genmean <- aggregate(dfsub$Donation, list(dfsub$gender), mean)
+ggplot(data = genmean, aes(x = genmean$Group.1, y = genmean$x)) +
+  geom_bar(stat = "identity")
+
+genmeant <- aggregate(dfsub$Donation, list(dfsub$gender, dfsub$treatment), mean)
+ggplot(data = genmeant, aes(x = Group.1, y = x)) +
+  facet_grid(~Group.2) +
+  geom_bar(stat = "identity") +
+  xlab("Gender") +
+  ylab("Average donation") +
+  theme(axis.text.x = element_text(angle = 90, vjust=.8, size=10))
+```
+*Could be interesting. For example, when looking at Control, RecNos, RecNap, RecPol, RecPar, (And RecKno), the treatment-effect seems to be present for women, but not (or eben negatively) for men. This seems to be also true for Defaults, but slightly different*
+
+## Gender differences (by Intervention type)
+```{r, echo = FALSE}
+genmeanI <- aggregate(dfsub$Donation, list(dfsub$Intervention, dfsub$gender), mean)
+ggplot(data = genmeanI, aes(x = Group.2, y = x)) +
+  facet_grid(~Group.1) +
+  geom_bar(stat = "identity") +
+  xlab("Gender") +
+  ylab("Average donation")
+```
+
+## Gender differences (by Source type)
+```{r, echo = FALSE}
+genmeanS <- aggregate(dfsub$Donation, list(dfsub$Sourcetype, dfsub$gender), mean)
+ggplot(data = genmeanS, aes(x = Group.2, y = x)) +
+  facet_grid(~Group.1) +
+  geom_bar(stat = "identity") +
+  theme(axis.text.x = element_text(angle = 90, vjust=.8, size=10)) +
+  xlab("Gender") +
+  ylab("Average donation")
+
+genmeanA <- aggregate(dfsub$Donation, list(dfsub$Sourcetype, dfsub$Intervention, dfsub$gender), mean)
+ggplot(data = genmeanA, aes(x = Group.3, y = x)) +
+  facet_grid(Group.2~Group.1) +
+  geom_bar(stat = "identity") +
+  theme(axis.text.x = element_text(angle = 90, vjust=.8, size=10))
+```
+*Same as above, the treatment effect seems to be present for females, but only when the source is political or associated with the green party. For males, the treatment effect seems to be zero, or slightly negative.*
+
+## Regression analysis of interaction effect between treatment and gender
+```{r}
+summary(lm(Donation ~ treatment*gender, dfsub))
+```
+*Still need to verify whether this is equivalent to using dummy variables for the treatments. However, I do not think that the treatment variable is treated as metric.*
+
+## Gender and Reactance interaction per treatment
+```{r, echo=FALSE}
+t <- aggregate(dfsub$Donation, list(dfsub$Reactance, dfsub$gender), mean)
+t$n <- aggregate(dfsub$Donation, list(dfsub$Reactance, dfsub$gender), length)
+
+ggplot(data = t, aes(x = Group.1, y = x, color = Group.2)) +
+  facet_wrap(~Group.2) +
+  geom_bar(stat = "identity")
+
+t <- aggregate(dfsub$Donation, list(dfsub$Reactance, dfsub$Intervention), mean)
+t$n <- aggregate(dfsub$Donation, list(dfsub$Reactance, dfsub$Intervention), length)
+
+ggplot(data = t, aes(x = Group.1, y = x, color = Group.2)) +
+  facet_wrap(~Group.2) +
+  geom_bar(stat = "identity")
+```
+
+# Party preference differences
+
+# Including only "believers" in Julia Verlinden
+```{r, echo = FALASe}
+dfbelA <- df[(!is.na(df$believe2)) & (df$treatment != "DefNos"),]
+table(dfbelA$believe2, factor(dfbelA$treatment))
+chisq.test(table(dfbelA$believe2, dfbelA$treatment)) # incorrect
+summary(glm(believe2 ~ treatment, data = dfbelA, family = "binomial"))
+summary(glm(believe2 ~ Sourcetype*Intervention, data = dfbelA, family = "binomial"))
+
+```
+```{r, echo=FALSE}
+describeBy(dfbel$Donation, dfbel$treatment)
+
+df.nbel <- data.frame(c(1:11), c(1:11))
+colnames(df.nbel)[1] <- "treatment"
+colnames(df.nbel)[2] <- "V1"
+df.nbel$V1[1] <- paste0("n==", length(dfbel$treatment[dfbel$treatment == "Control"]))
+df.nbel$V1[2] <- paste0("n==", length(dfbel$treatment[dfbel$treatment == "RecNos"]))
+df.nbel$V1[3] <- paste0("n==", length(dfbel$treatment[dfbel$treatment == "DefNos"]))
+df.nbel$V1[4] <- paste0("n==", length(dfbel$treatment[dfbel$treatment == "RecNap"]))
+df.nbel$V1[5] <- paste0("n==", length(dfbel$treatment[dfbel$treatment == "DefNap"]))
+df.nbel$V1[6] <- paste0("n==", length(dfbel$treatment[dfbel$treatment == "RecPol"]))
+df.nbel$V1[7] <- paste0("n==", length(dfbel$treatment[dfbel$treatment == "DefPol"]))
+df.nbel$V1[8] <- paste0("n==", length(dfbel$treatment[dfbel$treatment == "RecPar"]))
+df.nbel$V1[9] <- paste0("n==", length(dfbel$treatment[dfbel$treatment == "DefPar"]))
+df.nbel$V1[10] <- paste0("n==", length(dfbel$treatment[dfbel$treatment == "RecKno"]))
+df.nbel$V1[11] <- paste0("n==", length(dfbel$treatment[dfbel$treatment == "DefKno"]))
+df.nbel$treatment <- as.factor(as.character(df.nbel$treatment))
+df.nbel$treatment <- factor(df.nbel$treatment, levels = c(1,2,3,4,5,6,7,8,9,10,11), labels=c("Control", "RecNos", "DefNos", "RecNap", "DefNap", "RecPol", "DefPol", "RecPar", "DefPar", "RecKno", "DefKno")) 
+
+ggplot(data=dfbel, aes(x=Donation, color=treatment)) +
+  facet_wrap(~treatment) +
+  stat_bin(binwidth = .1) +
+  geom_text(data=df.nbel, aes(x=5, y = 10, label=V1), parse=TRUE) +
+  ggtitle("Frequency of Donation values by treatment") +
+  xlab("Donation amount") +
+  ylab("Frequency")
+```
+
+# Treatment interactions with...
+## ... personal Interest and Knowledge w.r.t climate protection
+
+## ... warm Glow feeling/ feeling of guilt when (not) protecting the climate
+
+## ... judging carbon offsetting as a efficient way to protect the climate
+
+## ... moral importance of climate protection
+
+## ... income
+
+## ... assessment of sources knowledge and interest w.r.t. climate protection

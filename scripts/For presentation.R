@@ -2,7 +2,7 @@
 # Distance Regressions (Logistic, OLS Dist, OLS conditional Dist) ----
 log_nvs_r <- glm(Donated ~ RecvsDefD * NosvsSomeD * ReactanceM, df, family = "binomial")
 log_nvs_rr <- coeftest(log_nvs_r, vcov = vcovHC(log_nvs_r, "HC1"))
-log_nvs_ur <- glm(Donated ~ RecvsDefD * NosvsSomeD * ReactanceM + EAI + moralD + retireEffD + genderB + green, df, family = "binomial")
+log_nvs_ur <- glm(Donated ~ RecvsDefD * NosvsSomeD * Reactance + EAI + moralD + retireEffD + genderB + green, df, family = "binomial")
 log_nvs_urr <- coeftest(log_nvs_ur, vcov = vcovHC(log_nvs_ur, "HC1"))
 log_st_r <- glm(Donated ~ RecvsDefD * Sourcetype * ReactanceM, df, family = "binomial")
 log_st_rr <- coeftest(log_st_r, vcov = vcovHC(log_st_r, "HC1"))
@@ -261,7 +261,8 @@ ols_nvs_ur
 beta.hat <- coef(ols_nvs_ur) ## IMPORTANT THIS IS NON ROBUST!!!
 
 # pull out the covariance matrix
-cov <- vcov(ols_nvs_ur) ## IMPORTANT THIS IS NON ROBUST!!!
+cov <- vcov(ols_nvs_ur) ## IMPORTANT THIS IS NON ROBUST!!! I SHOULD CHANGE THE NON ROBUST 
+# SE's WITH THE ROBUST SE'S MANUALLY! SHOULD NOT BE TOO DIFFICULT!!!
 
 # a set of values of Reactance to compute the (instantaneous) 
 # effect of Intervention type (RecvsDefD) 
@@ -271,7 +272,7 @@ z0 <- seq(min(df$ReactanceM), max(df$ReactanceM))
 dy.dx <- beta.hat["RecvsDefDDef"] + beta.hat["RecvsDefDDef:ReactanceM"]*z0 # without Reactance main effect
 dy.dx1 <- beta.hat["RecvsDefDDef"] + beta.hat["RecvsDefDDef:NosvsSomeDSome Source"] + beta.hat["RecvsDefDDef:ReactanceM"]*z0 + beta.hat["RecvsDefDDef:NosvsSomeDSome Source:ReactanceM"]*z0
 
-# calculate the standard error of each estimated effect
+# calculate the standard error of each estimated effect (SE NON RUBST SE'S ABOVE)
 se.dy.dx <- sqrt(cov["RecvsDefDDef", "RecvsDefDDef"] + z0^2*cov["RecvsDefDDef:ReactanceM", "RecvsDefDDef:ReactanceM"] + 2*z0*cov["RecvsDefDDef", "RecvsDefDDef:ReactanceM"])
 
 # calculate upper and lower bounds of a 90% CI
@@ -293,9 +294,7 @@ dat <- cbind(dat, lwr95)
 # Plot of marginal interaction effect (RecvsDefD x Reactaance) for NoSource with 90% and 95% 
 # confidence intervals
 ggplot() +
-  scale_x_continuous(breaks = -4:6) +
-  scale_y_continuous(breaks = -3:5) +
-  geom_line(data = dat, aes(x = z0, y = dy.dx, color = "No Source"), size = 1.5, show.legend = T) +
+   geom_line(data = dat, aes(x = z0, y = dy.dx, color = "No Source"), size = 1.5, show.legend = T) +
   geom_line(data = dat, aes(x = z0, y= dy.dx1, color = "Some Source"), size = 1.5, show.legend = T)+
   xlab(expression(Reactance (centered))) +
   ylab(expression(frac(partialdiff*Distance, partialdiff*InterventionType))) +
@@ -307,6 +306,8 @@ ggplot() +
   geom_hline(yintercept = 0, linetype = "dashed") +
   geom_vline(xintercept = 0, linetype = "dashed") +
   geom_histogram(data = df, aes(x = ReactanceM, y = (..count../sum(..count..)*2)), binwidth = 0.5, alpha = 0.6) +
+  scale_x_continuous(breaks = -4:6) +
+  scale_y_continuous(breaks = c(-3, -2, -1, 0, 1, 2, 3, 4)) +
   ggtitle(expression(atop("Marginal effect of Instrument type on Distance for Reactance scale", atop(italic("with 90% confidence intervals"),"for No Source and Some Source"))))
 
 ### For NosvsSomeD
@@ -481,3 +482,4 @@ ggplot(data = df, aes(x = RecvsDef, y = Donation)) +
   facet_wrap(~SourcetypeC) +
   xlab("Intervention type") +
   ylab("Donation")
+

@@ -1,0 +1,1570 @@
+---
+title: "Data Analysis_HB_17052016"
+author: "Hendrik Bruns"
+date: '17052016'
+output: pdf_document
+---
+
+```{r, message=FALSE, echo=FALSE}
+setwd("Z:/Projects/Who intervenes/Experiment/Data")
+load("Data_17052016.RData") # without those who already knew Julia Verlinden
+```
+```{r, echo=FALSE, error=FALSE, include=FALSE}
+library(ggplot2)
+library(psych)
+library(plyr)
+library(gmodels)
+library(modeest)
+library(mhurdle)
+library(lmtest)
+library(stargazer)
+library(sandwich)
+library(MASS)
+```
+
+# Descriptive Statistics
+Following are relevant aggregated statistics and statistics by each of the 11 treatments for each of three relevant dependent variables. These relevant dependent variables are
+1. Donation, which is the amount the subject donated in order to retire emission rights
+2. Donated, which is equal to 1 if the subject donated a positive amount, and 0 otherwise
+3. Belief, which is the amount the subject thinks other participants in this experiment donated on average (not incentivized)
+
+## Variable: Donation to retire carbon licenses
+### Aggregated descriptive statistics
+```{r, echo=FALSE}
+summary(df$Donation)
+sd(df$Donation)
+
+ggplot(data = df, aes(x = Donation)) +
+  stat_bin(aes(y = ..count../sum(..count..)), binwidth = .1) +
+  ggtitle("Fractions of participants contributing a certain amount") +
+  xlab("Donation amount") +
+  ylab("Fraction of participants contributing respective amount")
+```
+
+### Distribution of aggregated donations
+```{r, echo=FALSE, message=FALSE} 
+ggplot(df, aes(x = Donation)) +
+geom_histogram() + 
+stat_bin(binwidth = .1) +
+  ggtitle("Frequency of Donation values") +
+  xlab("Donation amount") +
+  ylab("Frequency")
+```
+
+### Distribution of aggregated donations with normal curve
+
+```{r, echo = FALSE}
+x <- df$Donation
+h <- hist(x, breaks=10, col = "red", xlab = "Donation amount")
+xfit <- seq(min(x), max(x), length = 40)
+yfit <- dnorm(xfit, mean = mean(x), sd = sd(x))
+yfit <- yfit*diff(h$mids[1:2])*length(x)
+lines(xfit, yfit, col = "black", lwd = 2)
+```
+
+### Kernel density plot of aggregated donations
+
+```{r, echo = FALSE}
+ggplot(data = df, aes(x = Donation))+
+  geom_density() +
+  ggtitle("Kernel density plot")
+```
+
+#### Distribution of donations by treatment
+
+```{r, echo=FALSE, message=FALSE}
+df.n <- data.frame(c(1:11), c(1:11))
+colnames(df.n)[1] <- "treatment"
+colnames(df.n)[2] <- "V1"
+df.n$V1[1] <- paste0("n==", length(df$treatment[df$treatment == "Control"]))
+df.n$V1[2] <- paste0("n==", length(df$treatment[df$treatment == "RecNos"]))
+df.n$V1[3] <- paste0("n==", length(df$treatment[df$treatment == "DefNos"]))
+df.n$V1[4] <- paste0("n==", length(df$treatment[df$treatment == "RecNap"]))
+df.n$V1[5] <- paste0("n==", length(df$treatment[df$treatment == "DefNap"]))
+df.n$V1[6] <- paste0("n==", length(df$treatment[df$treatment == "RecPol"]))
+df.n$V1[7] <- paste0("n==", length(df$treatment[df$treatment == "DefPol"]))
+df.n$V1[8] <- paste0("n==", length(df$treatment[df$treatment == "RecPar"]))
+df.n$V1[9] <- paste0("n==", length(df$treatment[df$treatment == "DefPar"]))
+df.n$V1[10] <- paste0("n==", length(df$treatment[df$treatment == "RecKno"]))
+df.n$V1[11] <- paste0("n==", length(df$treatment[df$treatment == "DefKno"]))
+df.n$treatment <- as.factor(as.character(df.n$treatment))
+df.n$treatment <- factor(df.n$treatment, levels = c(1,2,3,4,5,6,7,8,9,10,11), labels=c("Control", "RecNos", "DefNos", "RecNap", "DefNap", "RecPol", "DefPol", "RecPar", "DefPar", "RecKno", "DefKno")) 
+
+ggplot(data=df, aes(x=Donation, color=treatment)) +
+  facet_wrap(~treatment) +
+  stat_bin(binwidth = .1) +
+  geom_text(data=df.n, aes(x=5, y = 10, label=V1), parse=TRUE) +
+  ggtitle("Frequency of Donation values by treatment") +
+  xlab("Donation amount") +
+  ylab("Frequency") 
+```
+
+### Donations by treatment (Boxplot)
+*Red diamonds in boxplots represent the respective means*
+
+```{r, echo=FALSE}
+# generate dataframe with Donation average for each treatment
+ggplot(df, aes(treatment, Donation)) +
+  geom_boxplot() +
+  geom_jitter() +
+  stat_summary(fun.y = mean, colour="blue", geom="point", shape=18, size=3) +
+  #stat_summary(fun.y = median, colour="red", geom="point", shape=18, size=3) +
+  theme(axis.text.x = element_text(angle = 45, vjust=.5, size=10)) +
+  xlab("Treatments") +
+  ylab("Donation amount")
+```
+
+*There do not appear to be big differences in the median donations between the different treatments. Differences in mean donations, which also d not appear to be pretty big, seem to be largely driven by outliers.*
+
+```{r}
+kruskal.test(df$Donation ~ df$treatment)
+```
+
+*The Kruskal Wallis test does not reject the null hypothesis of no differences in donations between treatments.*
+
+### Donations by aggregated treatment (Boxplot), i.e. Def vs. Rec vs. Control
+
+```{r, echo=FALSE}
+ggplot(df, aes(as.factor(RecvsDef), Donation)) +
+  geom_boxplot() +
+  stat_summary(fun.y = mean, colour="darkred", geom="point", shape=18, size=3) +
+  xlab("Intervention type") +
+  ylab("Donation amount")
+```
+
+*Aggregated over all different types of sources, there appears to be no difference between donations, when the intervention is a recommendation vs. when the intervention is a default. Furthermore, both seem not to be significantly different from the control group, especially when considering that the higher means in the recommendation and default groups are likely due to outliers.*
+
+```{r, echo = FALSE}
+kruskal.test(df$Donation, df$RecvsDef)
+```
+
+*The Kruskal Wallis test does not reject the null hypothesis of no differences in donations between recommendation, default, and control groups, irrespective of the source of intervention.*
+
+### Donations by Reactance score 
+The reactance score was constructed by changing each of the 11 rectance-items to a dummy variable equal to 1 if the subject chose 3 or 4 on the respective item, and 0 otherwise. Afterwards, all 11 dummies were added to construct an ordinal Reactance score.
+
+Shows a point plot (not jittered) with Donation amount and the respective Reactance score of each participant. Includes a linear regression line, including the 95% confidence region, of the Reactance score as a predictor for the Donation amount.
+
+```{r, echo=FALSE}
+ggplot(data=df, aes(x = Reactance, y = Donation)) +
+  geom_point() +
+  geom_smooth(method="lm")
+```
+
+*Irrespective of treatments (i.e. assuming that reactance scores are randomly distributed over different treatments (no correlation)) there is no (linear) relationship between donation amount and reactance score.*
+
+#### Donations by Reactance score per treatment
+Shows a point plot (not jittered) with Donation amount and the respective Reactance score of each participant, for each treatment. Includes a linear regression line, including the 95% confidence region, of the Reactance score as a predictor for the Donation amount, for each treatment.
+
+```{r, echo=FALSE} 
+ggplot(data=df, aes(x = Reactance, y = Donation, color = treatment)) +
+  facet_wrap(~treatment) +
+  geom_point() +
+  geom_text(data=df.n, aes(x=5, y=10, label=V1), parse=TRUE)+
+  geom_smooth(method=lm)
+
+kruskal.test(df$Reactance, df$treatment)
+```
+
+*The Kruskal Wallis test does not reject the null hypothesis that there is no difference between the reactance scores in the different treatment groups. The plots show that there does not seem to be a consistent relationship between donation amount and reactance score over the different treatments. Judging by the graphical representation of the 95% confidence interval of the regression line, reactance score (treated as a metric) seems to be a bad predictor for donation amount, even when controlling for treatments.*
+*This becomes apparent in the following regression (With heteroskedasticity robust standard errors).*
+
+```{r, echo=FALSE}
+lm <- (lm(Donation ~ treatment + Reactance, df))
+coeftest(lm, vcov = vcovHC(lm,type="HC1"))
+```
+
+
+### Donations by EAI score
+The EAI score was constructed by changing each of the 12 EAI-items to a dummy variable equal to 1 if the subject chose 3 or 4 on the respective item, and 0 otherwise. Afterwards, all 12 dummies were added to construct an ordinal EAI score.
+
+Shows a point plot (not jittered) with Donation amount and the respective EAI score of each participant. Includes a linear regression line, including the 95% confidence region, of the EAI score as a predictor for the Donation amount.
+
+```{r, echo=FALSE}
+ggplot(data=df, aes(x = EAI, y = Donation)) +
+  geom_point() +
+  geom_smooth(method="lm")
+```
+
+*Irrespective of treatments (i.e. assuming that EAI scores are randomly distributed over different treatments (no correlation)) there appears to be a slightly positive relationship between EAI and Donation amount. Mind, however, that, since EAI was surveyed after the experiment, it is not undoubtedly sure that there is a causal relationship. We would need to assume that Donations do not influence responses to the EAI. In any case, EAI score can be regarded as a predictor of Donation amount (irrespective of treatments), that appears to be slightly positive.*
+
+#### Donations by EAI score per treatment
+Shows a point plot (not jittered) with Donation amount and the respective EAI score of each participant, for each treatment. Includes a linear regression line, including the 95% confidence region, of the EAI score as a predictor for the Donation amount, for each treatment.
+
+```{r, echo=FALSE} 
+ggplot(data=df, aes(x = EAI, y = Donation, color = treatment)) +
+  facet_wrap(~treatment) +
+  geom_point() +
+  geom_text(data=df.n, aes(x=5, y=10, label=V1), parse=TRUE) +
+  geom_smooth(method=lm)
+
+kruskal.test(df$EAI, df$treatment)
+```
+
+*The Kruskal Wallis test does not reject the null hypothesis that there is no difference between the EAI scores in the different treatment groups. The plots show that there seems to be a consistent relationship between donation amount and EAI score over the different treatments. Judging by the graphical representation of the 95% confidence interval of the regression line, EAI score (treated as a metric) seems to be a positive, but not necessarily significant predictor for donation amount, even when controlling for treatments.*
+*This becomes apparent in the following regression (robust SE), where, when controlling for treatments, EAI is a significantly positive predictor for Donation amount.*
+
+```{r, echo=FALSE}
+lm <- (lm(Donation ~ treatment + EAI, df))
+coeftest(lm, vcov = vcovHC(lm,type="HC1"))
+```
+
+## Variable: Donation dummy (1 if donated, 0 otherwise)
+### Aggregated descriptive statistics
+```{r, echo=FALSE}
+summary(df$Donated)
+
+table(df$Donated, df$treatment)
+
+m <- aggregate(df$Donatedm, list(df$treatment), sum)
+m$n <- aggregate(df$Donatedm, list(df$treatment), length)[2]
+ggplot(data = m, aes(Group.1, x/n)) +
+  geom_bar(stat = "identity") +
+  ylab("Fraction of participants contributing more than 0") +
+  xlab("Treatments")
+
+ggplot(data = df, aes(treatment)) +
+  geom_bar() +
+  ylab("Absolute number of participants contributing more than 0") +
+  xlab("Treatments")
+
+ggplot(data = df, aes(x = Donated, color = treatment)) +
+  geom_bar() +
+  facet_wrap(~treatment) +
+  geom_text(data=df.n, aes(x=1, y=20, label=V1), parse=TRUE) +
+  theme(axis.text.x = element_text(angle = 90, vjust=.8, size=10)) +
+  ylab("Number of participants")
+```
+
+*There appear to be considerable differences in fractions of people donating (extensive margin) between different treatments, but not in the absolute number of participants donating.*
+
+```{r, echo=FALSE}
+chisq.test(df$Donated, df$treatment) 
+
+glm <- (glm(Donated ~ treatment, df, family = "binomial"))
+coeftest(glm, vcov = vcovHC(glm,type="HC1"))
+glm <- (glm(Donated ~ RecvsDefD * Sourcetype, df, family = "binomial"))
+coeftest(glm, vcov = vcovHC(glm,type="HC1"))
+```
+
+*According to the Chi²-test, the difference between treatments concerning the decision to donate is not significant.*
+*However, according to the binomial logistic regression with robust standard errors, a recommendation from a political actor, as well as a default from a political actor, significantly increase the probability to donate (p < .1 and p < .05, respectively). This effect is not visible when the logistic model is specified using the two factors intervention type and source separately with an interaction term. This indicates that the significant differences are due to differences from the control group (note that I tested whether this is true. I incorporated a treatment variable without the control group in another regression. This OLS regression had the same output as the avove regression with the interaction of Sourcetype and intervention type. However, from both I get different information. The information in the interaction model is a bit more disaggregated, since it does not evaluate effects against one treatment as the base category, but separates between intervention type, sourcetype and interaction- and main effects).*
+
+*The following graphs visually support the regression finding of no significant influence of intervention type on extensive margins.*
+*Note, however, that the regressions exclude the control group.*
+
+```{r, echo=FALSE}
+df.n1 <- data.frame(c(1:3), c(1:3))
+colnames(df.n1)[1] <- "RecvsDef"
+colnames(df.n1)[2] <- "V1"
+df.n1$V1[1] <- paste0("n==", length(df$RecvsDef[df$Intervention == "Recommendation"]))
+df.n1$V1[2] <- paste0("n==", length(df$RecvsDef[df$Intervention == "Default"]))
+df.n1$V1[3] <- paste0("n==", length(df$RecvsDef[df$RecvsDef == "Control"]))
+df.n1$RecvsDef <- as.factor(as.character(df.n1$RecvsDef))
+df.n1$RecvsDef <- factor(df.n1$RecvsDef, levels = c(1,2,3), labels=c("Rec", "Def", "Control")) 
+
+ggplot(data = df, aes(x = Donated, color = RecvsDef)) +
+  geom_bar() +
+  facet_wrap(~RecvsDef) +
+  geom_text(data=df.n1, aes(x=1, y=60, label=V1), parse=TRUE) +
+  ylab("Absolute number of people donating")
+
+m <- aggregate(df$Donatedm, list(df$RecvsDef), sum)
+m$n <- aggregate(df$Donatedm, list(df$RecvsDef), length)[2]
+ggplot(data = m, aes(Group.1, x/n)) +
+  geom_bar(stat = "identity") +
+  xlab("Type of intervention, including control") +
+  ylab("Fraction of participants donating more than 0") +
+  ggtitle("Fraction of participants donating by intervention type aggregated over sourcetype")
+```
+
+*The following graphs support the finding that sourcetype plays a (limited) role on the extensive margin, i.e. the decision to donate more than zero.*
+
+```{r, echo=FALSE}
+m <- aggregate(df$Donatedm, list(df$Sourcetype), sum)
+m$n <- aggregate(df$Donatedm, list(df$Sourcetype), length)[2]
+ggplot(data = m, aes(Group.1, x/n)) +
+  geom_bar(stat = "identity") +
+  xlab("Source, excluding control") +
+  ylab("Fraction of participants donating more than 0") +
+  ggtitle("Fraction of participants donating by sourcetype aggregated over intervention type")
+```
+
+*Mind here that I am not still certain why the source effect (that of political and partisan) from the logistic regression disappears as soon as I incorporate the interaction of sourcetype with intervention type.*
+
+### Decision to donate by Reactance score
+```{r, echo=FALSE}
+i <- aggregate(df$Donatedm, list(df$Reactance), sum) 
+n <- aggregate(df$Donated, list(df$Reactance), length)
+ni <- cbind(i, n)
+ni <- ni[, -3]
+ni$ratio <- ni$x/ni$x.1 # Fraction of people that donated in each Reactance score category
+ggplot(data = ni, aes(x = Group.1, y = ratio)) +
+  geom_bar(stat = "identity") +
+  ylab("Fraction of people with resp. Reactance score that donated") +
+  xlab("Reactance score")
+```
+
+```{r, echo=FALSE}
+chisq.test(table(df$Donated, df$Reactance), simulate.p.value = TRUE)
+glm <- (glm(Donated ~ Reactance, df, family = "binomial"))
+coeftest(glm, vcov = vcovHC(glm,type="HC1"))
+glm <- (glm(Donated ~ treatment + Reactance, df, family = "binomial"))
+coeftest(glm, vcov = vcovHC(glm,type="HC1"))
+glm <- (glm(Donated ~ RecvsDefD * Sourcetype + Reactance, df, family = "binomial"))
+coeftest(glm, vcov = vcovHC(glm,type="HC1"))
+```
+
+*The decision of whether or not to donate depends on Reactance (based on the Chi² Test. However the test is only slightly significant (p < .1). The logistic regression model with robust standard errors is not significant (without controlling for treatments). When controlling for treatments (including control), Reactance stays insignificant, and default with a political actor still significantly increases the probability to donate anything with control group as the base category. When including intervention type and source type as interactions (excluding control group), while controlling for reactance, nothing is significant (as before).*
+
+### Decision to donate by Reactance score and treatment
+```{r, echo=FALSE}
+l <- aggregate(df$Donatedm, list(df$Reactance, df$treatment), sum) 
+k <- aggregate(df$Donated, list(df$Reactance, df$treatment), length) 
+lk <- cbind(l, k)
+lk <- lk[, -c(4,5)]
+lk$ratio <- lk$x/lk$x.1
+ggplot(data = lk, aes(x = Group.1, y = ratio, color = Group.2)) +
+  facet_wrap(~Group.2) +
+  geom_bar(stat = "identity") +
+  ylab("Fraction of people with resp. Reactance score that donated") +
+  xlab("Reactance score")
+```
+
+*Visually, there appears to be no relationship of reactance score and donation broken down by treatment on the decision to donate.*
+
+### Decision to donate by EAI score
+```{r, echo=FALSE}
+f <- aggregate(df$Donatedm, list(df$EAI), sum )
+g <- aggregate(df$Donated, list(df$EAI), length)
+fg <- cbind(f, g)
+fg <- fg[, -3]
+fg$ratio <- fg$x/fg$x.1
+ggplot(data = fg, aes(x = Group.1, y = ratio)) +
+  geom_bar(stat = "identity") +
+  ylab("Fraction of people with resp. EAI score that donated") +
+  xlab("EAI score")
+```
+
+```{r, echo=FALSE}
+chisq.test(table(df$Donated, df$EAI), simulate.p.value = TRUE)
+glm <- (glm(Donated ~ EAI, df, family = "binomial"))
+coeftest(glm, vcov = vcovHC(glm,type="HC1"))
+glm <- (glm(Donated ~ treatment + EAI, df, family = "binomial"))
+coeftest(glm, vcov = vcovHC(glm,type="HC1"))
+glm <- (glm(Donated ~ RecvsDefD * Sourcetype + EAI, df, family = "binomial"))
+coeftest(glm, vcov = vcovHC(glm,type="HC1"))
+```
+
+*The decision of whether or not to donate depends on EAI (based on the Chi² Test). The test is significant (p < .05). In the logistic regression model with robust standard errors EAI is significantly positive (without controlling for treatments). When controlling for treatments (including control), EAI stays significant (but only at p < .1), and recommendation and default with a political actor still significantly increase the probability to donate anything with control group as the base category. When including intervention type and source type as interactions (excluding control group), while controlling for EAI, only EAI is significantly positive (but only at p < .1).*
+
+### Decision to donate by EAI score and treatment
+```{r, echo=FALSE}
+h <- aggregate(df$Donatedm, list(df$EAI, df$treatment), sum) #numbers that donated in each group
+i <- aggregate(df$Donated, list(df$EAI, df$treatment), length) # amount of observations in each group
+hi <- cbind(h, i)
+hi <- hi[, -c(4,5)]
+hi$ratio <- hi$x/hi$x.1
+ggplot(data = hi, aes(x = Group.1, y = ratio, color = Group.2)) +
+  facet_wrap(~Group.2) +
+  geom_bar(stat = "identity") +
+  ylab("Fraction of people with resp. EAI score that donated") +
+  xlab("EAI score")
+```
+
+*Visually, there appears to be some positive relationship of EAI score and donation broken down by treatment on the decision to donate. However, it is hard to verify visually.*
+
+## Variable: Beliefs about other participants donations
+### Aggregated descriptive statistics
+```{r, echo=FALSE}
+summary(df$belief)
+sd(df$belief)
+```
+
+### Distribution of aggregated beliefs about donations
+```{r, echo=FALSE, message=FALSE} 
+ggplot(df, aes(x = belief)) +
+geom_histogram() + 
+stat_bin(binwidth = .5) +
+  ggtitle("Frequency of beliefs about others' donations") +
+  xlab("Belief") +
+  ylab("Frequency")
+
+ggplot(data = df, aes(x = belief))+
+  geom_density() +
+  ggtitle("Kernel density plot")
+```
+
+#### Distribution of beliefs by treatment
+```{r, echo=FALSE, message=FALSE}
+ggplot(data=df, aes(x=belief, color=treatment)) +
+  facet_wrap(~treatment) +
+  stat_bin(binwidth = .1) +
+  geom_text(data=df.n, aes(x=4, y = 10, label=V1), parse=TRUE) +
+  ggtitle("Frequency of beliefs about others donations by treatment") +
+  xlab("Belief") +
+  ylab("Frequency")
+```
+
+### Beliefs by treatment (Boxplot)
+```{r, echo=FALSE}
+ggplot(df, aes(treatment, belief)) +
+  geom_boxplot() +
+  stat_summary(fun.y = mean, colour="darkred", geom="point", shape=18, size=3)
+
+kruskal.test(df$belief ~ df$treatment)
+```
+
+*There do not appear to be differences in the median beliefs about other participants donations between the different treatments. The Kruskal Wallis test supports this view and does not reject the null hypothesis of equal median beliefs between the different treatments.*
+
+# Test of hypotheses from the working paper
+
+## H0a
+> Mean and median payments to retire carbon licenses in the control condition are (close to) zero.
+
+*H0: Average Donations = 0*
+
+*HA: Average Donations >< 0*
+```{r, echo=FALSE}
+wilcox.test(df$Donation, mu = 0)
+```
+
+*Based on the Wilcoxon test we reject the null that Donations are equal to 0. Note however that the test almost rejects any value. This is possibly because of the metric nature of the Donation variable.*
+
+## H0b
+> The share of subjects whose payments correspond to the recommended, respectively defaulted payment-value (convergence) is higher than in the control condition. Additionally, we expect that the share of subjects converging to the default is higher than the share converging to the recommendation.
+
+### Aggregated donations in recommendation treatments > donations in control group
+```{r, echo=FALSE}
+kruskal.test(df$Donation, df$RecvsDef)
+```
+
+*Based on the Kruskal Wallis test we do not reject the null hypothesis that donations do not significantly differ between groups that get a recommendation, a default, or ar in the control group.*
+
+### Aggregated donations in default treatments > donations in recommendation treatments
+```{r, echo=FALSE}
+wilcox.test(df$Donation ~ df$RecvsDefD, alternative = "less")
+```
+
+*Based on the one-sided Wilcoxon test we do not reject the null that Donations in default treatments are equal to donations in recommendation treatments.*
+
+## H0c
+> The share of subjects converging to the recommended, respectively defaulted payment-values in the name and picture condition is higher than in the neutral source-condition.
+
+### For Recommendations: Donations in Name and Picture treatments > Donations in No-Source treatments
+```{r, echo=FALSE}
+wilcox.test(df$Donation ~ df$RecNapvsRecNos, exact = FALSE, alternative = "greater")
+```
+
+*Based on the Wilcoxon test we do not reject the null hypothesis that Donations in recommendation treatments informing about the name and picture of the source are equal to donations in recommendation treatments providing no information about the source of the recommendation.*
+
+### For Defaults: Donations in Name and Picture treatments > Donations in No-Source treatments
+```{r, echo=FALSE}
+wilcox.test(df$Donation ~ df$DefNapvsDefNos, exact = FALSE, alternative = "greater")
+```
+
+*Based on the Wilcoxon test we do not reject the null hypothesis that Donations in default treatments informing about the name and picture of the source are equal to donations in default treatments providing no information about the source of the default.*
+
+## H1
+> A subject's reaction towards the respective intervention ~~depends on~~ is predicted by trait reactance.
+
+**This is an interaction**
+
+```{r, echo=FALSE} 
+lm <- (lm(Donation ~ treatment * Reactance, df))
+coeftest(lm, vcov = vcovHC(lm, "HC1"))
+lm <- lm(Donation ~ RecvsDefD * Sourcetype * Reactance, df)
+coeftest(lm, vcov = vcovHC(lm, "HC1"))
+```
+
+*If I interpret this hypothesis as reactance interacting with the treatment on the donation amount, there appears to be an effect of reactance on the treatment, also when treatments are broken down to the two factors sourcetype and intervention type (excluding the control group). The OLS-regression model uses robust standard errors and, remember, treats reactance as a metric variables.*
+
+*Mind that it might be roblematic that there are not many observations in each respective category, so that the significant effects might be due to missing observations (?). I suspect this because the significant effects are missing as soon as I do not use reactance as part of an interaction. I should investigate this further.*
+
+### H1a
+> A subject that scores high (i.e. higher than median) on trait reactance is less likely to converge to the recommended and defaulted payment-values, than a subject scoring low on trait reactance.
+
+**This is an interaction**
+
+*The previous regression suggests that as reactance increases, the significantly positive effect of default vs. recommendation decreases. Note however that I am not quite sure if it is right to treat this as a tripple interaction term. Below, I do not do that, but only control for sourcetype when interacting the intervention type with the reactance dummy.*
+
+```{r, echo = FALSE}
+ggplot(data=df, aes(x = Reactance, y = Donation, color = RecvsDef)) +
+  facet_wrap(~RecvsDef) +
+  geom_point() +
+  geom_smooth(method=lm) +
+  ggtitle(expression(atop("Relation between Donation and Reactance score", atop(italic("resp. for Rec and Def treatment groups"),""))))
+
+wilcox.test(df$Donation[df$treatment != "Control"] ~ df$ReactD[df$treatment != "Control"], alternative = "greater")
+```
+
+*Based on the (one-sided) Wilcoxon test we can not reject the null hypothesis of a location shift of the donation amount equal to zero of those with an above vs. below/equal median reactance score, among those that encountered either type of intervention (aggregated over/ irrespective of sourcetype).*
+
+### H1b
+> A subject that scores high (i.e. higher than median) on trait reactance is less likely to converge to the defaulted than to the recommended payment-value. 
+
+
+```{r, echo=FALSE} 
+wilcox.test(df$Donation[df$ReactD == "Above Med React"] ~ df$RecvsDefD[df$ReactD == "Above Med React"], alternative = "greater")
+lm <- (lm(Donation ~ Sourcetype + RecvsDefD * ReactD, df))
+coeftest(lm, vcov = vcovHC(lm, "HC1"))
+lm <- (lm(Donation ~ Sourcetype * RecvsDefD * ReactD, df))
+coeftest(lm, vcov = vcovHC(lm, "HC1"))
+
+ggplot(df, aes(x = ReactD, y = Donation)) +
+  facet_wrap(Sourcetype~RecvsDef)+
+  geom_boxplot() +
+  stat_summary(fun.y = mean, colour="darkred", geom="point", shape=18, size=2) +
+  theme(axis.text.x = element_text(angle = 45, vjust=.5, size=10))
+
+ggplot(data = dfsub, aes(x = Sourcetype, y = Donation, color = ReactD)) +
+  facet_grid(ReactD~RecvsDef) +
+  geom_boxplot() +
+  stat_summary(fun.y = mean, colour="darkred", geom="point", shape=18, size=2) +
+  theme(axis.text.x = element_text(angle = 45, vjust=.5, size=10))
+```
+
+*Based on the (one-sided) Wilcoxon test we may not confidently reject the null hypothesis of a true location shift equal to zero of the donation amount between recommendation and default groups, for those that have above median reactance scores. This test aggregates over sourcetypes, i.e. does not control for them. However, in the logistic regression model with robust standard errors, the effect is also not significant.*
+
+*The OLS regression with robust standard errors suggests that there is no interaction effect between having above median reactance score and the default on donation amount. When including the tripple interaction with Sourcetype and Intervention type some parameters become significant, but this could be due to the same problem of not many observations per category as above. Judged by the latter figure, there might be an interaction for recommendation instrument when switching from political to partisan source information with reactance above/ or below median. For recommendations, switching from political to partisan source information increases average/median donation amounts for those with below or equal to median reactance, and decreases average/median donation amounts for those with above median reactance. This and other interaction effects are appearent in the triple interaction robust OLS regression above.*
+
+## H2
+> The share of subjects converging to the recommended, respectively defaulted payment-values in the condition informing about the academic degree of the source is higher than in the name and picture condition.
+
+### For Recommendations: Donations in Knowledge treatments > Donations in Name and Picture treatments
+```{r}
+wilcox.test(df$Donation ~ df$RecNapvsRecKno, exact = FALSE, alternative = "less")
+```
+
+*Based on the Wilcoxon test we cannot confidently reject the null hypothesis of zero donation location shift between recommendation groups with name and picture information vs. recommendation groups with knowledge source information in favor of the alternative hypothesis that the former are less than the latter.* 
+
+### For Defaults: Donations in Knowledge treatments > Donations in Name and Picture treatments
+```{r}
+wilcox.test(df$Donation ~ df$DefNapvsDefKno, exact = FALSE, alternative = "less")
+```
+
+*Based on the Wilcoxon test we cannot confidently reject the null hypothesis of zero donation location shift between default groups with name and picture information vs. default groups with knowledge source information in favor of the alternative hypothesis that the former are less than the latter.* 
+
+## H3-1
+> The share of subjects converging to the recommended, respectively defaulted payment-values in the condition informing about the political characteristic of the source is lower than in the name and picture condition.
+
+### For Recommendations: Donations in Political treatments < Donations in Name and Picture treatments
+```{r}
+wilcox.test(df$Donation ~ df$RecNapvsRecPol, exact = FALSE, alternative = "greater")
+```
+
+*Based on the one sided Wilcoxon test we cannot reject the null hypothesis that Donations in recommendation treatments informing about the political mandate of the source are equal to donations in recommendations treatments providing the name and picture of the source, in favor of the alternative hypothesis that donations in recommendation + political mandate groups are less than those in the recommendation + name and picture groups.*
+
+### For Defaults: Donations in Political treatments < Donations in Name and Picture treatments
+```{r}
+wilcox.test(df$Donation ~ df$DefNapvsDefPol, exact = FALSE, alternative = "greater")
+```
+
+*Based on the one sided Wilcoxon test cannot reject the null that donations in default treatments informing about the political mandate of the source are equal to donations in default treatments providing the name and picture of the source, in favor of the alternative hypothesis that donations in default + political mandate groups are less than those in the default + name and picture groups.*
+
+## H3-2
+> When the source is political the share of subjects converging to the default is lower than the share of subjects converging to the recommendation.
+
+### Donations in default treatments informing about the political characteristics of the source < donations in recommendation treatments informing about the political characteristics of the source
+```{r}
+wilcox.test(df$Donation ~ df$RecPolvsDefPol, exact = FALSE, alternative = "greater")
+```
+
+*Based on the one sided Wilcoxon test we cannot reject the null that donations in default treatments informing about the political characteristics of the source are equal to donations in recommendation treatments informing about the political characteristics of the source, in favor of the alternative hypothesis that donations are higher in the political recommendation groups than in the political default groups.*
+
+### H3a
+> A subject that scores high on trust in politics is more likely to converge to the recommended and defaulted payment-values, than a subject scoring low on trust in politics. *In treatments informing about the political characteristics of the source.*
+
+**This is an interaction effect**
+
+```{r, echo=FALSE} 
+table(df$trustPol, df$treatment)
+
+ggplot(data=df, aes(x = trustPolD, y = Donation, color = RecPolvsDefPol)) +
+  facet_wrap(~RecPolvsDefPol) +
+  geom_boxplot() +
+  geom_jitter() +
+  stat_summary(fun.y = mean, colour="darkred", geom="point", shape=18, size=3) +
+  ggtitle(expression(atop("Relationship between trust in politics dummy and Donation", atop(italic("resp. for RecPol and DefPol treatment groups"),""))))
+```
+
+*Problem is that there are not enough observations with high trust in politics (no observation in DefPol and RecPol treatment.*
+
+*Therefore we are not able to test this hypothesis with this variable! In the following, I construct a different dummy variable with respect to deviation from the median value.*
+
+#### H3a - alternative with differently coded variable (above median)
+```{r, echo =FALSE}
+table(df$trustPolM, df$treatment)
+
+ggplot(data=df, aes(x = trustPolM, y = Donation, color = RecPolvsDefPol)) +
+  facet_wrap(~RecPolvsDefPol) +
+  geom_boxplot() + 
+  geom_jitter() +
+  stat_summary(fun.y = mean, colour="darkred", geom="point", shape=18, size=3) +
+  theme(axis.text.x = element_text(angle = 45, vjust=.5, size=10)) +
+  ggtitle(expression(atop("Relationship between trust in politics above M dummy and Donation", atop(italic("resp. for RecPol and DefPol treatment groups"),""))))
+
+wilcox.test(df$Donation[df$treatment == "RecPol"] ~ df$trustPolM[df$treatment == "RecPol"], exact = FALSE, alternative = "less")
+wilcox.test(df$Donation[df$treatment == "DefPol"] ~ df$trustPolM[df$treatment == "DefPol"], exact = FALSE, alternative = "less")
+
+lm <- (lm(Donation ~ RecPolvsDefPol * trustPolM, df))
+coeftest(lm, vcov = vcovHC(lm,type="HC1"))
+```
+
+*The one sided Wilcoxon tests suggest that there is no effect of having trust above median neither for those in the RecPol, nor for those in the DefPol treatment groups. I think this does not exclude a possible interaction effect per se, but the OLS regression suggests that, among political sources, there is no significant interaction effect of above median trust in politics and receiving a recommendation vs. default by a political actor on donation amount.*
+
+### H3b
+> A subject that values conformity, i.e. doing what the majority does, is more likely to converge to the recommended and defaulted payment-values, than a subject that does not value conformity. 
+
+```{r, echo=FALSE} 
+table(df$conformity, df$treatment)
+
+ggplot(data=df, aes(x = conformityD, y = Donation, color = RecPolvsDefPol)) +
+  facet_wrap(~RecPolvsDefPol) +
+  geom_boxplot() +
+  geom_jitter() +
+  stat_summary(fun.y = mean, colour="darkred", geom="point", shape=18, size=3) +
+  ggtitle(expression(atop("Relationship between conformity dummy and Donation", atop(italic("resp. for RecPol and DefPol treatment groups"),""))))
+
+wilcox.test(df$Donation ~ df$conformityD)
+```
+
+*Problem is that there are not enough observations with high trust in politics.*
+
+*Therefore we are not able to test this hypothesis! In the following, I construct a different dummy variable with respect to deviation from the median value.*
+
+#### H3b - alternative with differently coded variable (above median)
+```{r, echo =FALSE}
+table(df$conformityM, df$treatment)
+
+ggplot(data=df, aes(x = conformityM, y = Donation, color = RecPolvsDefPol)) +
+  facet_wrap(~RecPolvsDefPol) +
+  geom_boxplot() + 
+  geom_jitter() +
+  stat_summary(fun.y = mean, colour="darkred", geom="point", shape=18, size=3) +
+  theme(axis.text.x = element_text(angle = 45, vjust=.5, size=10)) +
+  ggtitle(expression(atop("Relationship between conformity above M dummy and Donation", atop(italic("resp. for RecPol and DefPol treatment groups"),""))))
+
+wilcox.test(df$Donation[df$treatment == "RecPol"] ~ df$conformityM[df$treatment == "RecPol"], exact = FALSE, alternative = "less")
+wilcox.test(df$Donation[df$treatment == "DefPol"] ~ df$conformityM[df$treatment == "DefPol"], exact = FALSE, alternative = "less")
+
+lm <- (lm(Donation ~ RecPolvsDefPol * conformityM, df))
+coeftest(lm, vcov = vcovHC(lm,type="HC1"))
+```
+
+*The one sided Wilcoxon tests suggest that there is an effect of valuing conformity above median for those in the RecPol, confidently rejecting the null hypothesis of no true locations hift in favor of the alternative hypothesis that donations for those in the RecPol treatment are lower then valuing conformity less than the median. The test is not significant for those in the DefPol treatment groups. The OLS regression with robust standard errors suggests that, among subjects encountering political sources, there is a significant interaction effect of above median conformity valuation and seeing a default. The main effects are not significant. Based on the sign of the estimate, having above conformity valuation decreases the (positive?) effect of having a default by a political source instead of a recommendation by a political source.*
+
+**IMPORTANT: How to correctly interpret the interaction effect when the main effect is not significant?**
+
+*"There is only one situation possible in which a interaction is significant, but the main effects are not: a cross-over interaction." This cross-interaction is appearant in the box plot. I can imagine the main effect as the difference of the mean of the left means of RecPol and DefPol and the mean of the right means of RecPol and DefPol. This would be the main effect of conformity. This is equivalent for the other main effect.*
+
+**IMPORTANT: Do I need to incorporate the other groups, i.e. the mean effect of conformity over all other treatments?**
+
+## H4
+> ~~The share of subjects converging to the recommended, respectively defaulted payment-values, relative to the political-characteristic condition, is higher for subjects with same party preferences, and lower for subjects with different party preferences.~~
+**Hypothesis is phrased wrongly.**
+
+> The share of subjects converging to the recommended, respectively defaulted payment-values in treatment groups that encounter a partisan source, is higher for those with the same party preferences, and lower for subjects with different party preferences.
+
+```{r}
+table(df$green, df$RecParvsDefPar)
+chisq.test(table(df$green, df$RecParvsDefPar))
+```
+
+*The Chi² test suggests that there is a significant difference of green subjects in RecPar and DefPar treatments. Judged by the table, there are significantly less green subjects in the RecPar treatment, copared to the DefPar treatment. This will have to be accounted for in the test and is suboptimal.*
+
+```{r, echo = FALSE}
+ggplot(data=df, aes(x = green, y = Donation, color = RecParvsDefPar)) +
+  facet_wrap(~RecParvsDefPar) +
+  geom_boxplot() + 
+  geom_jitter() +
+  stat_summary(fun.y = mean, colour="darkred", geom="point", shape=18, size=3) +
+  theme(axis.text.x = element_text(angle = 45, vjust=.5, size=10)) +
+  ggtitle(expression(atop("Relationship between green party affiliation and Donation", atop(italic("resp. for RecPar and DefPar treatment groups"),""))))
+
+wilcox.test(df$Donation[df$treatment == "RecPar"] ~ df$green[df$treatment == "RecPar"], exact = FALSE, alternative = "less")
+wilcox.test(df$Donation[df$treatment == "DefPar"] ~ df$green[df$treatment == "DefPar"], exact = FALSE, alternative = "less")
+
+lm <- (lm(Donation ~ RecParvsDefPar * green, df))
+coeftest(lm, vcov = vcovHC(lm,type="HC1"))
+
+```
+
+*The one sided Wilcoxon tests suggest that there is an effect of having green party preferences for those in the DefPol treatment group, confidently rejecting the null hypothesis of no true location shift in favor of the alternative hypothesis that donations for those in the DefPol treatment are lower when being not green. The test is not significant for those in the RecPol treatment groups. The OLS regression with robust standard errors suggests that there are neither main effects nor an interaction effect.*
+
+**Does this account for the fact that generally green subjects give more (i.e. those in the other treatment groups thatn RecPar and DefPar)? Would I have to account for this by including the other groups that are different from RecPar and DefPar (which are so far excluded as NAs)?**
+
+
+# Further Statistics and Tests
+Since from now on we do not only test hypotheses that were stated before conducting the experiment, we can now freely vary the dependent variable and other variables.
+
+## Compare observations that believe we cooperated with Julia Verlinden vs. those who don't
+### Variable: Donation amount
+```{r, echo=FALSE}
+describeBy(df$Donation, df$believe2)
+wilcox.test(df$Donation ~ df$believe2)
+```
+
+*Based on the two-sided Wilcoxon test we can not confidently reject the null hypothesis of equal median locations of donation amounts between those who believe we cooperated with Julia Verlinden and those who do not believe us.*
+
+## Decision to donate for subjects seeing a recommendation vs. subjects seeing a default, with non-political source-information
+```{r, echo=FALSE}
+table(df$Donated, df$RecvsDefNonPolPar)
+chisq.test(table(df$Donated, df$RecvsDefNonPolPar))
+```
+
+*The Chi²-Test is not significant. This implies that the decision whether or not to contribute anything vs. nothing is not dependent on whether the subjects encountered a non-political or non-partisan recommendation or a respective default value.*
+
+## Decision to donate for subjects seeing an intervention without source-information vs. some source-information
+```{r, echo=FALSE}
+table(df$Donated, df$NosvsSome)
+chisq.test(table(df$Donated, df$NosvsSome))
+```
+
+*The Chi² test is significant (p < .1). This implies that the decision whether or not to contribute or not depends on whether or not some source-information vs. no source-information is provided.*
+
+```{r, echo=FALSE}
+o <- aggregate(df$Donatedm, list(df$NosvsSome), sum)
+o$n <- aggregate(df$Donated, list(df$NosvsSome), length)
+o$ratio <- o$x/o$n
+ggplot(data = o, aes(x = Group.1, y = ratio[[2]])) +
+  geom_bar(stat = "identity") +
+  geom_text(data = o, aes(x=1, y= .5, label = n[[1,2]]), parse=TRUE) +
+  geom_text(data = o, aes(x=2, y= .5, label = n[[2,2]]), parse=TRUE) +
+  geom_text(data = o, aes(x=3, y= .5, label = n[[3,2]]), parse=TRUE) +
+  xlab("Source?") +
+  ylab("Fraction of participants donating")
+
+p <- aggregate(df$Donatedm, list(df$NosvsSomeD, df$Intervention), sum)
+p$n <- aggregate(df$Donated, list(df$NosvsSomeD, df$Intervention), length)[3]
+p$ratio <- p$x/p$n
+
+ggplot(data = p, aes(x = Group.1, y = ratio, color = Group.2)) +
+  facet_grid(~Group.2) +
+  geom_bar(stat = "identity") +
+  theme(axis.text.x = element_text(angle = 45, vjust=.5, size=10)) +
+  xlab("Source provided?") +
+  ylab("Fraction of subjects donating")
+
+glm <- (glm(Donated ~ NosvsSomeD + RecvsDefD, df, family = "binomial"))
+coeftest(glm, vcov = vcovHC(glm,type="HC1"))
+glm <- (glm(Donated ~ NosvsSomeD * RecvsDefD, df, family = "binomial"))
+coeftest(glm, vcov = vcovHC(glm,type="HC1"))
+glm <- (glm(Donated ~ Sourcetype * RecvsDefD , df, family = "binomial")) 
+coeftest(glm, vcov = vcovHC(glm,type="HC1"))
+```
+
+*In the robust logistic regression controlling for intervention type, the estimator for the provision of any source-information is also statistically significant and positive (Excluding the control group). However, in the second robust logistic regression that treats both variables as an interaction, neither main effects nor interaction effect is significant. The same is the case when disaggregating sourcetype.*
+
+**I need to understand which of both treatments of both factor variables is adequate, i.e. how both interpretations differ. That is very important.**
+
+## Graphs in order to see potential interactions
+### Political/partisan vs. non-political/partisan source information
+```{r, echo=FALSE, message=FALSE}
+ggplot(data = df, aes(x = Intervention, y = Donation, colour = Intervention)) +
+  facet_wrap(~Sourcetype) +
+  geom_boxplot() +
+  xlab("Intervention type") +
+  ylab("Average Donation") +
+  theme(axis.text.x = element_text(angle = 45, vjust=.5, size=10)) +
+  stat_summary(fun.y = mean, colour="darkred", geom="point", shape=18, size=3)
+
+p <- aggregate(df$Donatedm, list(df$Intervention, df$Sourcetype), sum)
+p$n <- aggregate(df$Donated, list(df$Intervention, df$Sourcetype), length)
+p$fraction <- p$x/p$n
+ggplot(data = p, aes(x = Group.1, y = fraction[[3]], color = Group.1)) +
+  facet_grid(~Group.2) +
+  geom_bar(stat = "identity") +
+  ylab("Fraction of participants donating") +
+  xlab("Intervention type")+
+  theme(axis.text.x = element_text(angle = 45, vjust=.5, size=10))
+
+
+ggplot(data = df, aes(x = Sourcetype, y = Donation, colour = Sourcetype)) +
+  facet_wrap(~Intervention) +
+  geom_boxplot() +
+  ylab("Average Donation") +
+  xlab("Source type") +
+  theme(axis.text.x = element_text(angle = 90, vjust=.8, size=10)) +
+  stat_summary(fun.y = mean, colour="darkred", geom="point", shape=18, size=3)
+
+ggplot(data = df, aes(x = NonPolvsPol, y = Donation, colour = NonPolvsPol)) +
+  facet_wrap(~Intervention) +
+  geom_boxplot() +
+  ylab("Average Donation") +
+  xlab("Source type") +
+  theme(axis.text.x = element_text(angle = 90, vjust=.8, size=10)) +
+  stat_summary(fun.y = mean, colour="darkred", geom="point", shape=18, size=3)
+
+describeBy(df$Donation, df$NonPolvsPol)
+wilcox.test(df$Donation ~ df$NonPolvsPol, alternative = "less")
+
+lm <- (lm(Donation ~ NonPolvsPol*Intervention, df))
+coeftest(lm, vcov = vcovHC(lm,type="HC1"))
+```
+
+*This suggests (visually) that providing information about political/partisan aspects of the source has an impact for average contributions for Recommendations, but not for Defaults. Only looking at the median, providing information about political source characteristics might even be beneficial for recommendations and counter-beneficial for defaults. Further investigation with Wilcoxon Test and linear OLS-regression finds no significant effects.*
+
+```{r}
+m <- aggregate(df$Donatedm, list(df$NonPolvsPol, df$Intervention), sum)
+m$n <- aggregate(df$Donatedm, list(df$NonPolvsPol, df$Intervention), length)[3]
+ggplot(data = m, aes(x = Group.1, y = x/n, colour = Group.1)) +
+  facet_grid(~Group.2) +
+  geom_bar(stat = "identity") +
+  xlab("Political Source?") +
+  ylab("Fraction of subjects donating")
+```
+
+*There does not seem to be anything of interest here.*
+
+### No source vs. no political source vs. political source
+```{r, echo=FALSE}
+p <- aggregate(df$Donatedm, list(df$Intervention, df$Sourcetype), sum)
+p$n <- aggregate(df$Donated, list(df$Intervention, df$Sourcetype), length)
+p$fraction <- p$x/p$n
+ggplot(data = p, aes(x = Group.2, y = fraction[[3]], color = Group.1)) +
+  facet_grid(~Group.1) +
+  geom_bar(stat = "identity") +
+  ylab("Fraction of participants donating") +
+  xlab("Source type") +
+  theme(axis.text.x = element_text(angle = 90, vjust=.8, size=10))
+
+i <- aggregate(df$Donatedm, list(df$NonPolvsPolA, df$Intervention), sum)
+i$n <- aggregate(df$Donatedm, list(df$NonPolvsPolA, df$Intervention), length)[3]
+ggplot(data = i, aes(x = Group.1, y = x/n, color = Group.2)) +
+  facet_grid(~Group.2) +
+  geom_bar(stat = "identity") +
+  ylab("Fraction of participants donating") +
+  xlab("Source type") +
+  theme(axis.text.x = element_text(angle = 45, vjust=.8, size=10))
+
+glm <- (glm(Donated ~ NonPolvsPolA * RecvsDef, df, family = "binomial"))
+coeftest(glm, vcov = vcovHC(glm,type="HC1"))
+
+ggplot(data = df, aes(x = NonPolvsPolA, y = Donation, color = Intervention)) +
+  facet_grid(~Intervention) +
+  geom_boxplot() +
+  theme(axis.text.x = element_text(angle = 45, vjust=.8, size=10)) +
+  stat_summary(fun.y = mean, colour="darkred", geom="point", shape=18, size=3)
+
+kruskal.test(df$Donation[df$Intervention == "Recommendation"] ~ df$NonPolvsPolA[df$Intervention == "Recommendation"])
+kruskal.test(df$Donation[df$Intervention == "Default"] ~ df$NonPolvsPolA[df$Intervention == "Default"])
+```
+
+*The logistic regression does not produce any significant predictors. Neither do the Kruskal Wallis tests for the respective interventions.*
+
+# Gender differences 
+```{r, echo=FALSE}
+chisq.test(table(factor(dfsub$gender), dfsub$treatment))
+glm <- (glm(gender ~ treatment, data = dfsub, family = "binomial"))
+coeftest(glm, vcov = vcovHC(glm,type="HC1"))
+```
+
+*Gender is not significantly differently represented along tratments*
+
+## Average donation gender differences (by treatment)
+```{r, echo=FALSE}
+ggplot(dfsub, aes(x = gender, y = Donation)) +
+  geom_boxplot() +
+  stat_summary(fun.y = mean, colour="darkred", geom="point", shape=18, size=3)
+
+wilcox.test(dfsub$Donation ~ dfsub$gender)
+
+df.nu <- aggregate(dfsub$ID, list(dfsub$gender, dfsub$treatment), length)
+colnames(df.nu) <- c("gender", "treatment", "x")
+ggplot(data = dfsub, aes(x = gender, y = Donation, color = gender )) +
+  facet_wrap(~treatment) +
+  geom_boxplot() +
+  geom_text(data=df.nu[df.nu$gender == "Weiblich",], aes(x=2, y = 6, label=x), parse=TRUE) +
+  geom_text(data=df.nu[df.nu$gender == "Männlich",], aes(x=1, y = 6, label=x), parse=TRUE) +
+  stat_summary(fun.y = mean, colour="darkred", geom="point", shape=18, size=3)
+
+kruskal.test(df$Donation[df$gender == "Weiblich"] ~ df$treatment[df$gender == "Weiblich"])
+kruskal.test(df$Donation[df$gender == "Männlich"] ~ df$treatment[df$gender == "Männlich"])
+
+lm <- (lm(Donation ~ RecvsDefD * Sourcetype * gender, dfsub))
+coeftest(lm, vcov = vcovHC(lm,type="HC1"))
+```
+
+* *According to the Wilcoxon test, the null hypothesis that men and women give equal amounts (irrespective of treatments) can be confidently rejected.*
+* *According to two Kruskal Wallis tests there is no (main) treatment effect for men, and none for women.*
+* *According to the robust logistic regression incorporating a triple interaction term of Intervention type, sourcetype and gender, being female increases the effect of a partisan source on average donations.*
+
+### Extensive margin (by treatment)
+```{r, echo=FALSE}
+y <- aggregate(dfsub$Donatedm, list(dfsub$gender, dfsub$Intervention, dfsub$Sourcetype), sum)
+y$n <- aggregate(dfsub$Donatedm, list(dfsub$gender, dfsub$Intervention, dfsub$Sourcetype), length)
+y$ratio <- y$x/y$n
+ggplot(data = y, aes(x = Group.1, y = ratio[[4]])) +
+  facet_grid(Group.2~Group.3) +
+  geom_bar(stat = "identity") +
+  theme(axis.text.x = element_text(angle = 90, vjust=.8, size=10)) +
+  ylab("Fraction of participants donating") +
+  xlab("Gender")
+
+chisq.test(table(dfsub$Donated, factor(dfsub$gender)))
+
+glm <- (glm(Donated ~ treatment+gender, data = dfsub, family = "binomial"))
+coeftest(glm, vcov = vcovHC(glm,type="HC1"))
+glm <- glm(Donated ~ RecvsDef * Sourcetype + gender, dfsub, family = "binomial")
+coeftest(glm, vcov = vcovHC(glm,type="HC1"))
+#for possible explanations of this see http://stats.stackexchange.com/questions/5450/what-if-interaction-wipes-out-my-direct-effects-in-regression
+```
+
+*Judging based on the robust logistic regression controlling for gender, contributing is significantly more likely for subjects seeing a default by a political source compared to the control group, i.e. seeing no intervention and source. Being female significantly increases the likelihood to donate. When gender is included via an interaction term, gender is not significant anymore, neither is the interaction with the treatment variables.*
+
+## Gender differences (by Intervention type)
+```{r, echo = FALSE}
+ggplot(data = dfsub, aes(x = gender, y = Donation)) +
+  facet_grid(~Intervention) +
+  geom_boxplot() +
+  xlab("Gender") +
+  ylab("Donation") +
+  stat_summary(fun.y = mean, colour="darkred", geom="point", shape=18, size=3)
+```
+
+## Gender differences (by Source type)
+```{r, echo = FALSE}
+ggplot(data = dfsub, aes(x = gender, y = Donation)) +
+  facet_grid(~Sourcetype) +
+  geom_boxplot() +
+  theme(axis.text.x = element_text(angle = 90, vjust=.8, size=10)) +
+  xlab("Gender") +
+  ylab("Average donation") +
+  stat_summary(fun.y = mean, colour="darkred", geom="point", shape=18, size=3)
+
+ggplot(data = dfsub, aes(x = Sourcetype, y = Donation)) +
+  facet_grid(gender~Intervention) +
+  geom_boxplot() +
+  theme(axis.text.x = element_text(angle = 90, vjust=.8, size=10)) +
+  stat_summary(fun.y = mean, colour="darkred", geom="point", shape=18, size=3)
+```
+
+* *The second graph shows that there appears to be no effect of providing source information for men, neither for recommendations, nor for defaults.*
+* *There appears to be a minor effect of providing source information for women, when the intervention type is a recommendation. There, providing information about the political/partisan characteristics of the source increases median and mean donations.*
+
+### Does this effect pick up in extensive margin?
+```{r, echo =FALSE}
+m <- aggregate(dfsub$Donatedm, list(dfsub$RecvsDef, dfsub$gender, dfsub$Sourcetype), sum)
+m$n <- aggregate(dfsub$Donatedm, list(dfsub$RecvsDef, dfsub$gender, dfsub$Sourcetype), length)
+ggplot(data = m, aes(x = Group.3, y = x/n[4])) +
+  facet_grid(Group.2 ~ Group.1) +
+  geom_bar(stat = "identity") +
+  theme(axis.text.x = element_text(angle = 90, vjust=.8, size=10))
+```
+
+* *Providing information about the political/partisan characteristics of the source for defaults (not for recommendations) appearantly increases the likelihood to donate for men. However, this does not appear to increase average donations for this group (previous boxplot).*
+* *Providing information about the polical/partisan characteristics of the source appearantly neither increases the probability to donate for recommendations nor for defaults, for women. However, providing women with political/partisan source information for recommendations increases average donations.*
+
+```{r, echo = FALSE}
+kruskal.test(dfsub$Donation[dfsub$gender == "Weiblich" & dfsub$Intervention == "Recommendation"] ~ dfsub$Sourcetype[dfsub$gender == "Weiblich" & dfsub$Intervention == "Recommendation"])
+```
+
+*Based on the Kruskal Wallis test, average Donations of women seeing a recommendation differ significantly for the different sourcetypes.*
+
+```{r, echo = FALSE}
+kruskal.test(dfsub$Donation[dfsub$gender == "Weiblich" & dfsub$Intervention == "Default"] ~ dfsub$Sourcetype[dfsub$gender == "Weiblich" & dfsub$Intervention == "Default"])
+
+kruskal.test(dfsub$Donation[dfsub$gender == "Männlich" & dfsub$Intervention == "Recommendation"] ~ dfsub$Sourcetype[dfsub$gender == "Männlich" & dfsub$Intervention == "Recommendation"])
+
+kruskal.test(dfsub$Donation[dfsub$gender == "Männlich" & dfsub$Intervention == "Default"] ~ dfsub$Sourcetype[dfsub$gender == "Männlich" & dfsub$Intervention == "Default"])
+```
+
+*Neither for women seeing a default, nor for men seeing either intervention type, is there an effect of sourcetype on average donations.*
+
+```{r, echo = FALSE}
+kruskal.test(dfsub$Donation[dfsub$gender == "Weiblich" & dfsub$Intervention == "Recommendation"] ~ dfsub$NonPolvsPolA[dfsub$gender == "Weiblich" & dfsub$Intervention == "Recommendation"]) 
+
+lm <- (lm(Donation ~ gender*RecvsDefD*NonPolvsPol, dfsub))
+coeftest(lm, vcov = vcovHC(lm,type="HC1"))
+```
+
+* *Based on the Kruskal Wallis test, there is a significant difference of donations between women seeing a recommendation by non-political/partisan vs. policial/partisan sources. This is a more aggregated effect than the effect before. Before, we saw that this effect is significant primarily because of the donations in the recommendation by partisan source groups (which has, by the way, 17 observations, i.e. there are 17 womeon that see a recommendation by a partisan source).*
+
+## Gender and Reactance interaction per treatment
+```{r, echo=FALSE}
+ggplot(data = dfsub, aes(x = Reactance, y = Donation, color = gender)) +
+  facet_grid(~gender) +
+  geom_jitter() +
+  stat_summary(fun.y = mean, colour="darkred", geom="point", shape=18, size=2) +
+  ylab("Average donation amount and mean donations") +
+  xlab("Reactance score")
+
+ggplot(data = dfsub, aes(x = Reactance, y = Donation, color = gender)) +
+  facet_grid(gender~RecvsDef) +
+  geom_jitter() +
+  stat_summary(fun.y = mean, colour="darkred", geom="point", shape=18, size=2) +
+  geom_smooth(method = "lm") +
+  ylab("Average donation amount and mean donations") +
+  xlab("Reactance score")
+  
+
+ggplot(data = dfsub, aes(x = Reactance, y = Donation, color = gender)) +
+  facet_grid(gender~Sourcetype) +
+  geom_jitter() +
+  stat_summary(fun.y = mean, colour="darkred", geom="point", shape=18, size=2) +
+  geom_smooth(method = "lm") +
+  ylab("Average donation amount and mean donations") +
+  xlab("Reactance score")
+```
+
+*Based on these graphs it becomes apparent that the interactions of gender, reactance score and sourcetype/ intervention type, have very large confidence interval and are therefore hardly significant (see following regression). As soon as I disaggregate further by looking at a four-interaction term the effects become significant likely because of the very few observations in each category (regression not reported here).*
+
+# Including only "believers" in Julia Verlinden
+## First check if whether subjects believe we cooperated depends on treatment
+```{r, echo = FALSE}
+chisq.test(table(dfbelA$believe2, dfbelA$treatment))
+glm <- (glm(believe2 ~ treatment, data = dfbelA, family = "binomial"))
+coeftest(glm, vcov = vcovHC(glm,type="HC1"))
+glm <- (glm(believe2 ~ Sourcetype*Intervention, data = dfbelA, family = "binomial"))
+coeftest(glm, vcov = vcovHC(glm,type="HC1"))
+```
+
+* *According to the Chi²-Test, there is no significant difference in the number of people believing we cooperated with Julia Verlinden based on the different treatments that were asked this question.*
+* *Based on the first robust logistic regression, subjects are more likely to believe the cooperation when they are in the Recommendation Knowledgeable treatment.*
+* *Based on the second robust logistic regression, subjects are more likely to believe the cooperation when they see a knowledgeable source. However, this positive effect is diminished when being confronted with defaults rather than recommendations. Both effects are only significant at the 10% significance level.*
+
+## What explains the probability that people believe we cooperated with Julia?
+```{r, echo=FALSE}
+chisq.test(table(dfbelA$believe2, dfbelA$gender), simulate.p.value = TRUE)
+glm <- glm(believe2 ~ gender + treatment, dfbelA, family = "binomial")
+coeftest(glm, vcov = vcovHC(glm,type="HC1"))
+chisq.test(table(dfbelA$believe2, dfbelA$party), simulate.p.value = TRUE)
+glm <- glm(believe2 ~ party + RecvsDef * Sourcetype, dfbelA, family = "binomial")
+coeftest(glm, vcov = vcovHC(glm,type="HC1"))
+glm <- (glm(believe2 ~ Reactance + RecvsDef * Sourcetype, dfbelA, family = "binomial"))
+coeftest(glm, vcov = vcovHC(glm,type="HC1"))
+glm <- (glm(believe2 ~ demandEffectD + RecvsDef * Sourcetype, dfbelA, family = "binomial"))
+coeftest(glm, vcov = vcovHC(glm,type="HC1"))
+```
+
+*Whether or not respondents believe us that we cooperated with Julia does not differ by* * *gender (Chi²Test with simulated p-values and robust logistic regression controlling for sourcetype and intervention type interactions),*
+* *party affiliation (Chi²Test with simulated p-values and robust logistic regression controlling for sourcetype and intervention type interactions),*
+* *Reactance score (treated as metric in a robust logistic regression controlling for sourcetype and intervention type interactions),*
+* *experiencing a demand effect (dummy in a robust logistic regression controlling for sourcetype and intervention type interactions).Ü* 
+
+```{r, echo=FALSE}
+chisq.test(df$demandEffectD, df$treatment, simulate.p.value = TRUE)
+glm <- (glm(demandEffectD ~ RecvsDef * Sourcetype, df, family = "binomial"))
+coeftest(glm, vcov = vcovHC(glm,type="HC1"))
+```
+
+* *According to the Chi²Test, whether or not people experienced an experimenter demand effect does not depend on treatment.*
+* *According to the robust logistic regression, whether or not people experienced an experimenter demand effect is more likely for subjects confronted with partisan source information. This effect is decreased when the intervention is a default and not a recommendation.*
+
+## Check average donations by treatment only for those that believed we cooperated with Julia Verlinden
+```{r, echo=FALSE}
+ggplot(dfbel, aes(treatment, Donation)) +
+  geom_boxplot() +
+  stat_summary(fun.y = mean, colour="darkred", geom="point", shape=18, size=3)
+kruskal.test(dfbel$Donation ~ dfbel$treatment)
+```
+
+*The Kruskal Wallis test is not significant. This means that there are also no significant differences in Donations for those that believed we cooperated with Julia Verlinden.*
+
+## Check extensive margin by treatment only for those that believed we cooperated with Julia Verlinden
+```{r, echo=FALSE}
+table(dfbel$Donated, dfbel$treatment)
+chisq.test(table(dfbel$Donated, dfbel$treatment), simulate.p.value = TRUE)
+glm <- (glm(Donated ~ RecvsDef * Sourcetype, dfbel, family = "binomial"))
+coeftest(glm, vcov = vcovHC(glm,type="HC1"))
+```
+
+*Among those that believed we cooperated with Julia Verlinden, those who were confronted with a DefPol and RecPar were more likely than those in the control group to donate. Mind, however, that there are not much observations in the respective groups (not much variation).*
+
+# Treatment interactions with...
+## ... personal Interest and Knowledge w.r.t climate protection
+```{r, echo=FALSE}
+ggplot(data = df, aes(x = Sourcetype, y = Donation)) +
+  facet_grid(persIntD~Intervention) +
+  geom_boxplot() +
+  theme(axis.text.x = element_text(angle = 90, vjust=.8, size=10)) +
+  stat_summary(fun.y = mean, colour="darkred", geom="point", shape=18, size=3)
+
+ggplot(data = df, aes(x = Sourcetype, y = Donation)) +
+  facet_grid(persKnowD~Intervention) +
+  geom_boxplot() +
+  theme(axis.text.x = element_text(angle = 90, vjust=.8, size=10)) +
+  stat_summary(fun.y = mean, colour="darkred", geom="point", shape=18, size=3)
+```
+
+*No obvious and interesting effects appearent.*
+
+## ... assessment of source interest and knowledge w.r.t climate protection
+```{r, echo = FALSE}
+ggplot(data = df, aes(x = Sourcetype, y = Donation)) +
+  facet_grid(sourceInterestD~Intervention) +
+  geom_boxplot() +
+  theme(axis.text.x = element_text(angle = 90, vjust=.8, size=10)) +
+  stat_summary(fun.y = mean, colour="darkred", geom="point", shape=18, size=3)
+
+ggplot(data = df, aes(x = Sourcetype, y = Donation)) +
+  facet_grid(sourceKnowD~Intervention) +
+  geom_boxplot() +
+  theme(axis.text.x = element_text(angle = 90, vjust=.8, size=10)) +
+  stat_summary(fun.y = mean, colour="darkred", geom="point", shape=18, size=3)
+```
+
+*No obvious and interesting effects appearent.*
+
+## ... alignment of interest/ knowledge between subject and the subject's perception of the source
+```{r, echo=FALSE}
+ggplot(data = df, aes(x = SourcetypeD, y = Donation)) +
+  facet_grid(intAlign~Intervention) +
+  geom_boxplot() +
+  theme(axis.text.x = element_text(angle = 45, vjust=.8, size=10)) +
+  stat_summary(fun.y = mean, colour="darkred", geom="point", shape=18, size=3)
+
+ggplot(data = df, aes(x = SourcetypeD, y = Donation)) +
+  facet_grid(knowAlign~Intervention) +
+  geom_boxplot() +
+  theme(axis.text.x = element_text(angle = 45, vjust=.8, size=10)) +
+  stat_summary(fun.y = mean, colour="darkred", geom="point", shape=18, size=3)
+```
+
+*No obvious and interesting effects appearent.*
+
+## ... warm Glow feeling/ feeling of guilt when (not) protecting the climate
+```{r, echo=FALSE}
+glm <- (glm(warmGlowD ~ treatment, df, family = "binomial"))
+coeftest(glm, vcov = vcovHC(glm,type="HC1"))
+chisq.test(df$warmGlow, df$treatment, simulate.p.value = TRUE)
+```
+
+*Warm Glow experience does not significantly differ by treatment.*
+
+```{r, echo=FALSE}
+wilcox.test(df$Donation ~ df$warmGlowD)
+chisq.test(table(df$Donated, df$warmGlowD))
+
+ggplot(data = df, aes(x = Sourcetype, y = Donation)) +
+  facet_grid(warmGlowD~Intervention) +
+  geom_boxplot() +
+  theme(axis.text.x = element_text(angle = 45, vjust=.8, size=10)) +
+  stat_summary(fun.y = mean, colour="darkred", geom="point", shape=18, size=3)
+
+lm <- (lm(Donation ~ RecvsDefD * Sourcetype + warmGlowD, df))
+coeftest(lm, vcov = vcovHC(lm,type="HC1"))
+#lm <- (lm(Donation ~ RecvsDefD * Sourcetype * warmGlowD, df))
+#coeftest(lm, vcov = vcovHC(lm,type="HC1"))
+glm <- (glm(Donated ~ RecvsDefD * Sourcetype + warmGlowD, df, family = "binomial"))
+coeftest(glm, vcov = vcovHC(glm,type="HC1"))
+#glm <- (glm(Donated ~ RecvsDefD * Sourcetype * warmGlowD, df, family = "binomial"))
+#coeftest(glm, vcov = vcovHC(glm,type="HC1"))
+
+```
+
+* *Based on the Wilcoxon test, average donations differ between groups that feel or do not feel warm glow when contributing to climate change.*
+* *Based on the Chi² Test, the amount of people donating differs between groups that feel or do not feel warm glow when contributing to climate change.*
+* *Based on the robust OLS regression, warm Glow is highly positively significant as a predictor for average Donations, when controlling for treatments and interactions, which themselves are all insignificant (Which they had been before anyway). When including warm Glow as a part of a tripple interaction term, every predictor becomes insignificant (not reported here).*
+* *Based on the robust logistic regression, warm Glow is a highly positively significant predictor for the likelihood to donate anything, when controlling for treatments and interactions, which themselves are all insignificant (which they had been before anyway). When including warm glow as a part of a triple interaction term, every predictor is inisignificant except for warm glow, which is significant at p < .1.*
+
+## ... judging carbon offsetting as a efficient way to protect the climate
+```{r, echo=FALSE}
+chisq.test(table(df$retireEffic, df$treatment), simulate.p.value = TRUE)
+glm <- (glm(retireEffD ~ treatment, df, family = "binomial"))
+coeftest(glm, vcov = vcovHC(glm,type="HC1"))
+```
+
+*Judgment (dummy) is independent of treatment*
+
+## Average donation efficiency-judgment differences (by treatment)
+```{r, echo=FALSE}
+ggplot(df, aes(retireEffD, Donation)) +
+  geom_boxplot() +
+  stat_summary(fun.y = mean, colour="darkred", geom="point", shape=18, size=3) +
+  xlab("Judgment of license retirement as efficient")
+wilcox.test(df$Donation ~ df$retireEffD) 
+```
+
+*Based on the Wilcoxon test we can confidently reject the null hypothesis of equal median donations (Assuming similar distributions) of those that judge carbon license destruction as an efficient measure to fight climate change vs. does who do not.*
+
+```{r, echo=FALSE}
+ggplot(data = df, aes(retireEffD, Donation, color = retireEffD)) +
+  facet_wrap(~treatment) +
+  geom_boxplot() +
+  stat_summary(fun.y = mean, colour="darkred", geom="point", shape=18, size=3) +
+  theme(axis.text.x = element_text(angle = 90, vjust=.8, size=10)) +
+  xlab("Judgment of license retirement as efficient")
+
+ggplot(data = df, aes(Sourcetype, Donation)) +
+  facet_grid(retireEffD~Intervention) +
+  geom_boxplot() +
+  stat_summary(fun.y = mean, colour="darkred", geom="point", shape=18, size=3) +
+  theme(axis.text.x = element_text(angle = 90, vjust=.8, size=10))
+lm <- (lm(Donation ~ RecvsDef * Sourcetype * retireEffD, df))
+coeftest(lm, vcov = vcovHC(lm,type="HC1"))
+```
+
+*Based on the graphical representation of the interaction effects depicted partly in the regression results, it would make sense to change the base-category. For example, in this case there might also be an interaction of efficiency judgment and the effect from knowledgeable source information vs just name and picture (crossover interaction).*
+
+## ... moral duty to protect the climate
+```{r, echo=FALSE}
+chisq.test(table(df$moralD, df$treatment))
+glm <- (glm(moralD ~ treatment, df, family = "binomial"))
+coeftest(glm, vcov = vcovHC(glm,type="HC1"))
+```
+
+*Moral duty to protect climate is significantly different in treatments (negative predictor of RecNap and positive predictor in RecPol, both only p < .1).*
+
+## Average donation moral duty differences (by treatment)
+```{r, echo=FALSE}
+ggplot(df, aes(moralD, Donation)) +
+  geom_boxplot() +
+  stat_summary(fun.y = mean, colour="darkred", geom="point", shape=18, size=3) +
+  xlab("Judgment of license retirement as a moral duty")
+
+wilcox.test(df$Donation ~ df$moralD)
+```
+
+*The significant differences shown by the Wilcoxon test are not really dependable, since moral duty correlates with treatments. Therefore, the next regressions account for treatments.*
+
+```{r, echo=FALSE}
+lm <- (lm(Donation ~ treatment + moralD, df))
+coeftest(lm, vcov = vcovHC(lm,type="HC1"))
+lm <- (lm(Donation ~ RecvsDefD * Sourcetype * moralD, df))
+coeftest(lm, vcov = vcovHC(lm,type="HC1"))
+```
+
+* *When controlling for treatments, moral duty is a significant positive predictor for the Donation amount.*
+* *When implementing moral duty in a triple interaction, there is a positive main effect for both the provision of a name and picture as opposed to no source information and of moral duty as opposed to no moral duty. The interaction of moral duty and providing name and picture of the source is negative, meaning that the effect of providing name and picture is negative when subjects are morally responsible and positive when subjects are not morally responsible.*
+
+**Mind that here is suddenly became pretty obvious how to interpret the interaction effects. I have to keep in mind that the covariates do not establish causal effects on the dependent variable, however, the respective treatment variables do. Therefore, I should alsways phrase the interaction interpretations like I did above: The covariates interact with the causal effects of the treatment on the dependent variable.**
+
+```{r, echo=FALSE}
+ggplot(data = df, aes(moralD, Donation, color = moralD)) +
+  facet_wrap(~treatment) +
+  geom_boxplot() +
+  stat_summary(fun.y = mean, colour="darkred", geom="point", shape=18, size=3) +
+  theme(axis.text.x = element_text(angle = 90, vjust=.8, size=10)) +
+  xlab("Duty to protect climate")
+
+ggplot(data = df, aes(Sourcetype, Donation)) +
+  facet_grid(moralD~Intervention) +
+  geom_boxplot() +
+  stat_summary(fun.y = mean, colour="darkred", geom="point", shape=18, size=3) +
+  theme(axis.text.x = element_text(angle = 90, vjust=.8, size=10))
+```
+
+*The latter graphic shows the negative interaction effect. The Figure indicates that there might also be an interaction of moral duty and chancing from Name and picture to knowledgeable source information. Or from knowledgeable to political, or political to partisan for defaults.*
+
+**I will have to decide (theoretically) which of these interactions is interesting enough to discuss. However, I always have to keep in mind that the model may have few observations in the respective categories and might therefore not be very robust.**
+
+## ... income
+```{r, echo=FALSE}
+ggplot(data = df, aes(x = income)) +
+  geom_histogram() +
+  stat_bin(binwidth = 10)
+
+summary(lm(income ~ treatment, df))
+```
+
+*Reported income is relatively normally distributed and does not differ with treatment.*
+
+```{r, echo = FALSE}
+ggplot(data = df, aes(x = income, y = Donation)) +
+  geom_jitter()
+lm <- (lm(Donation ~ treatment+income, df))
+coeftest(lm, vcov = vcovHC(lm,type="HC1"))
+glm <- (glm(Donated ~ treatment+income, df, family = "binomial"))
+coeftest(glm, vcov = vcovHC(glm,type="HC1"))
+```
+
+*Reported income is neither a significant predictor for the average donation amount, nor for the probability to donate anything.*
+
+## Fractions of participants donating: Pol vs Knowledge
+```{r, echo=FALSE}
+x <- aggregate(df$Donatedm, list(df$KnovsPol, df$RecvsDefD), sum)
+x$n <- aggregate(df$Donatedm, list(df$KnovsPol, df$RecvsDefD), length)[3]
+ggplot(data = x, aes(x = Group.1, y = x/n)) +
+  facet_grid(~Group.2) +
+  geom_bar(stat = "identity")
+
+glm <- (glm(Donated ~ RecvsDefD *KnovsPol, df, family = "binomial"))
+coeftest(glm, vcov = vcovHC(glm,type="HC1"))
+
+ggplot(df, aes(KnovsPol, Donation)) +
+  facet_grid(~RecvsDefD) +
+  geom_boxplot()
+```
+
+*There is no interaction effect of Knowledge vs political source information and intervention type on the probability to donate anything. There is also no interaction on the average donation amount (regression not reported here).*
+
+# Disaggregated reactance scores (4 categories)
+```{r, echo=FALSE}
+summary(lm(Donation ~ treatment + as.factor(EmotionResp) + as.factor(ReactCompl) + as.factor(ResistInfl) + as.factor(ReactAdv), df)) 
+#ggplot(data = df, aes(x = Sourcetype, y = Donation, color = EmotionRespM)) +
+#  facet_grid(EmotionRespM~RecvsDef) +
+#  geom_boxplot() +
+#  stat_summary(fun.y = mean, colour="darkred", geom="point", shape=18, size=2) +
+#  theme(axis.text.x = element_text(angle = 45, vjust=.5, size=10))
+#lm <- (lm(Donation ~ RecvsDef * Sourcetype * EmotionRespM, df))
+#coeftest(lm, vcov = vcovHC(lm,type="HC1"))
+#lm <- (lm(Donation ~ RecvsDef * Sourcetype * ReactComplM, df))
+#coeftest(lm, vcov = vcovHC(lm,type="HC1"))
+#lm <- (lm(Donation ~ RecvsDef * Sourcetype * ResistInflM, df))
+#coeftest(lm, vcov = vcovHC(lm,type="HC1"))
+#lm <- (lm(Donation ~ RecvsDef * Sourcetype * ReactAdvM, df))
+#coeftest(lm, vcov = vcovHC(lm,type="HC1"))
+```
+
+*No significant effects of interest. Partly counter-intuitive. When looking at this with the respective above median dummies for the four reactance categories, there are very often not enough observations in the respective groups (not reported here).*
+
+# Exclude observations with demandEffectD == 1
+```{r, echo=FALSE}
+table(df$demandEffect, df$treatment)
+chisq.test(table(df$demandEffect, df$treatment), simulate.p.value = TRUE)
+
+kruskal.test(df$Donation ~ df$demandEffect)
+
+table(df$Donated, df$demandEffect)
+chisq.test(table(df$Donated, df$demandEffect))
+
+summary(glm(Donated ~ treatment + demandEffectD, df, family = "binomial"))
+
+summary(lm(Donation ~ treatment + demandEffectD, df))
+
+describeBy(dfnoDE$Donation, dfnoDE$treatment)
+kruskal.test(dfnoDE$Donation, dfnoDE$treatment)
+
+summary(lm(Donation ~ treatment, dfnoDE))
+summary(glm(Donated ~ treatment, dfnoDE, family = "binomial" ))
+```
+
+* *ChiÂ²Test suggests that experience of demand Effect does not depend on the treatment.*
+* *Kruskal Wallis Test suggests that experiencing a demand effect has an impact on Donation amount.*
+* *It is not significant (ChiÂ²) with dependent variable Donated (extensive margin).*
+* *In a logistic regression that incorporates treatment as IV and demandEffect as dummy, there is no demand effect.*
+* *In the OLS regression, there is also no effect, when controlling for treatment effects.*
+* *When only looking at subjects that did not experience a demand effect (judging on the dummy variable), according to the Kruskal Wallis Test, there are also no significant differences across treatments.*
+* *According to a logistic regression, the likelihood to donate is higher for those without a demand effect-experience that encountered DefPol and DefPar, with Control as base-category.*
+
+# Double Hurdle Model
+
+*My justification of a double-hurdle model (an extension of the Tobit Model) is that some subjects simply do not contribute to climate protection, they are zero-types. Contrary to Tobit (and p Tobit) models, a double Hurdle Model allows to specify the zero types via a set of subject characteristics, i.e. via independent variables. This is a generalization of the p tobit model, since it allows to vary the p parameter according to subject characteristics. I have to theoretically argue which characteristics are relevant (predict) whether a subject is a zero type and whether the treatment is important for this. Afterwards, the model predicts the amount subjects contribute.*
+> Source: Engel 2014
+
+```{r, echo=FALSE}
+# http://www.stata.com/new-in-stata/hurdle-models/
+# Hurdle models assume that the residuals of the hurdle equation(s) and the outcome equation are uncorrelated. 
+# For this assumption to be plausible, you typically must assume that it is different people who align themselves among the possible alternatives
+summary(mhurdle(Donation ~ moralD + retireEffD + NosvsSomeD + RecvsDefD | NosvsSomeD + RecvsDefD + belief + gender | 0, dfsub))
+table(dfsub$moral, dfsub$guilt)
+
+dfsub$beliefD <- ifelse(dfsub$belief >0, 1, 0)
+## TRYOUT!
+summary(glm(Donated ~ moralD + retireEffD + NosvsSomeD * RecvsDefD * Reactance, dfsub, family = "binomial"))
+summary(lm(Donation ~ NosvsSomeD + RecvsDefD + belief + gender, dfsub))
+
+dfsub$beliefD <- ifelse(dfsub$belief > 0, 1, 0)
+summary(mhurdle(Donation ~  moralD + retireEffD + NosvsSomeD * RecvsDefD * Reactance + gender + age + income | NosvsSomeD + RecvsDefD + belief + gender + age + income  | 0, dfsub, dist = "l")) # dist standard here is l, but changing it to n (normal) makes a huge difference. I do not really know what it means (however, l seems to be adequate (see below)) At the moment, this model does not account for correlation of the disturbance of the good selection equation (hurdle 1) with that of the consumption equation (hurdle 2)
+
+# I am not 100% sure whether it is logically justifiable to have the same IVs in the respective hurdles. In the examples of the text, they do not do that. However, logcally I can argue that the treatments in my experiment may have an effect on both hurdle 1 and 2
+
+# On first glance, running the model with correlated error terms does not change much
+
+# a large part of the R² comes from beliefs (there is a huge problem of endogeneity with beliefs, also it is not clear whether donations explain beliefs or beliefs explain donations - it would possibly be better to keep them out)
+
+summary(mhurdle(Donation ~  moralD + retireEffD + NosvsSomeD * RecvsDefD * Reactance + gender | belief + gender + age + income  | 0, dfsub, dist = "l"))
+  ## /TRYOUT!
+
+```
+
+*Potentially interesting story. Is it possible to link regression to explain believes with regression to explain donations, of which belief is one independent variable? Probably overly complex.*
+*Of course here I will also have to check whether the assumptions for these models are met.*
+
+> A Hurdle Model, according to Carlevaro, Croissant, Hoareau, consists of up to three hurdles. 
+* Hurdle 1 (the good selection mechanism) models the household decision of selecting or not selecting the good we consider as a relevant consumption good, complying with household's ethical, psychological and social convictions and habits. [Do I want to buy it/ Do I need it?]
+* Hurdle 2 (the desired consumption mechanism) models the household decision of consuming or not consuming the selected good, given its actual economic conditions. [Can I buy it/ Can I afford it?]
+* Hurdle 3 (the purchasing mechanism) models the household decision to purchase or not to purchase the good during the survey period over which expenditure data are collected [Do I buy it/ Am I observed buying it?]
+
+> The formula should have three parts on the right-hand side specifying, in the first part, the good selection equation covariates, in the second part, the desired consumption equation covariates and, in the third part, the purchasing equation covariates.
+> "If one wants that zeros only arise from the selection mechanism, one has to switch the dist argument to "l", so that a log-normal distribution is introduced." - Based on the text by Engel, I think that their hurdle model includes all observations in the second model, so that there based on the IVs the subjects also have the "chance" to not contribute anything (based on the second set of IVs) - there seem to be two hurdles were subjects can "fall". I think I introduce this by specifying dist = "n", which changes the significance of many parameters. If I change it to dist = "t", this seems to be similar to dist = "l"
+
+> Interdependence between these censoring mechanisms is modelled by assuming
+a possible correlation between the random disturbances in the model relations.
+
+# Simpler alternative to double hurdle model
+
+> As an alternative to the not well-known double hurdle model, I will first estimate a logistic model with
+* the binary variable of having donated vs. not having donated (extensive margin), and
+* the binary variable of gaving donated more vs. less than the median
+> This will be followed by an OLS-regression with
+* the continuous variable of the donation conditional on having donated (Heckman?)
+* the continuous variable of the donation conditional on having donated more than the median
+
+```{r, echo = FALSE}
+
+```
+
+# Checking model assumptions for models that I will use
+
+## Check for heteroskedasticity
+```{r, echo=FALSE}
+# http://www.r-bloggers.com/how-to-detect-heteroscedasticity-and-rectify-it/
+hurdle <- mhurdle(Donation ~  moralD + retireEffD + NosvsSomeD * RecvsDefD * Reactance + gender + age + income | NosvsSomeD + RecvsDefD + belief + gender + age + income  | 0, dfsub, dist = "l", corr = NULL)
+hurdlecorr <- mhurdle(Donation ~  moralD + retireEffD + NosvsSomeD * RecvsDefD * Reactance + gender + age + income | NosvsSomeD + RecvsDefD + belief + gender + age + income  | 0, dfsub, dist = "l", corr = "d")
+
+summary(glm(Donated ~  moralD + retireEffD + NosvsSomeD * RecvsDefD * Reactance + gender + age + income, dfsub, family = "binomial" ))
+
+lm <- (lm(Donation ~ moralD + retireEffD + NosvsSomeD*RecvsDefD*Reactance + gender + age+ income, data = dfsub))
+
+# how to get ROBUST SEs
+coeftest(glm, vcov = vcovHC(glm, "HC1")) # this is what stata would spit out
+
+#lm <- (lm(Donation ~ moralD + retireEffD + NosvsSomeD * RecvsDefD * Reactance + gender + age + income + belief, dfsub))
+#cov.lm <- vcovHC(lm, ttype = "HC") #estimates heteroskedasticity robust SEs
+#rob.std.err <- sqrt(diag(cov.lm))
+#naive.std.err <- summary(lm)$coefficients[,2]
+#estimate.table <- cbind("Estimate" = coef(lm),
+ #                       "Naive SE" = naive.std.err,
+ #                       "Robust SE" = rob.std.err)
+#better.table <- cbind("Estimate" = coef(lm), 
+           #           "Naive SE" = naive.std.err,
+           #           "Pr(>|z|)" = 2 * pt(abs(coef(lm)/naive.std.err), df=nrow(dfsub)-2, 
+           #                               lower.tail = FALSE),
+           #           "LL" = coef(lm) - 1.96 * naive.std.err, 
+           #           "UL" = coef(lm) + 1.96 * naive.std.err,
+            #          "Robust SE" = rob.std.err,  
+           #           "Pr(>|z|)" = 2 * pt(abs(coef(lm)/rob.std.err), df=nrow(dfsub)-2,
+           #                               lower.tail = FALSE), 
+           #           "LL" = coef(lm) - 1.96 * rob.std.err, 
+            #          "UL" = coef(lm) + 1.96 * rob.std.err)
+#rownames(better.table)<-c("Constant", "Temperature", "Gender Ratio")
+#better.table
+
+#stargazer(lm, lm,
+      #    se = list(naive.std.err,rob.std.err), 
+      #    title="Regression Results", 
+       #   align=TRUE, 
+       #   dep.var.labels=c("Donation amount"), 
+       #   no.space=TRUE, 
+       #   omit.stat=c("LL","ser","f", "rsq"),
+       #   column.labels=c("Naive SE", "Robust SE"), 
+       #   dep.var.caption="", 
+       #   model.numbers=FALSE,
+       #   type = "html")
+## Possible also for hurdle?
+
+summary(lm(Donation ~ moralD + retireEffD + NosvsSomeD * RecvsDefD * Reactance + gender + age + income + belief, dfsub))
+#plot(lm)
+
+# test of no correlation between hurdle 1 and 2 (H0: rho12 = 0, Ha: rho12 != 0)
+vuongtest(hurdlecorr, hurdle, type = "nested", hyp = TRUE) # TRUE assumes that the unrestricted model (including correlation) is correctly specified. when correlation by corr = d, the nested Vuong Test (with hyp = TRUE/FALSE) does not reject the null hypothesis that correlation is equal to zero.
+coef(summary(hurdlecorr), "corr") # Wald Test. According to this test outcome, the hypothesis of zero correlation is not rejected (I think but I am not sure)
+```
+> Plot 1: Plots residuals vs. fitted values. If there is absolutely no heteroskedasticity, I should see a completely random, equal distribution of points throughout the range of X axis and a flat red line. (In my example, heteroskedasticity seems to exist)
+> Plot 3: Plots standardised residuals on the Y axis. Here also, the pattern should be random and the red line flat. (In my example, heteroskedasticity seems to exist)
+
+> With the Breusch-Pagan test and the NCV test it is possible to test for heteroskedasticity and quantify it
+
+```{r, echo = FALSE}
+lmtest::bptest(lm) # Breusch-Pagan test
+```
+
+> Since the p-value is below .5, we can confidently reject the null hypothesis that the variance of the residuals is constant and infer that heteroskedasticity is indeed present, confirming our graphical reference
+
+> In order to rectify Heteroskedasticity, one would need to rebuild the model with new predictors, or transform variables with, e.g., Box-Cox transformation. The latter procedure mathematically transforms a variable to make it approximate to a normal distribution. This can be done for the dependent variable (can also be applied to IVs). Can only be applied to values bigger than 0 (if there are many zeros, we can add a constant to the variable)
+
+> I should just use heteroskedasticity-robust standard errors! (MASS-library, Huber method: rlm() instead of lm)
+
+```{r, echo=FALSE}
+dfsub$Donation1 <- dfsub$Donation+1
+hist(lm$resid) #looks reasonably normally distirbuted
+qqline(lm$resid)
+skewness(lm$resid)
+
+b <- boxcox(lm(Donation ~ moralD + retireEffD + NosvsSomeD * RecvsDefD * Reactance + gender + age + income + belief, dfsub)) #because of the 0s, we have to do the transformation with Donation+1
+lamda <- b$x
+lik <- b$y
+bc <- cbind(lamda, lik)
+#bc[order(-lik),] # -0.14141414 maximizes the log-likelihood
+lm2 <- lm((((Donation1^(-14/99))-1)/(-14/99)) ~ moralD + retireEffD + NosvsSomeD * RecvsDefD * Reactance + gender + age + income + belief, dfsub) # not sure if this is really right
+#plot(lm2)
+hist(lm2$resid) #looks reasonably normally distirbuted
+qqline(lm2$resid)
+skewness(lm2$resid)
+bptest(lm2) # rejects null hypothesis of equal variance
+# does not seem to work against heteroskedasticity
+```
+
+```{r, echo =FALSE}
+# http://www.statmethods.net/stats/rdiagnostics.html
+# http://www.r-bloggers.com/checking-glm-model-assumptions-in-r/
+# https://www.youtube.com/watch?v=eTZ4VUZHzxw
+```
+
+# Differently coded binary dependent variable (above or below median Donation)
+```{r, echo=FALSE}
+summary(df$DonatedMed)
+
+table(df$DonatedMed, df$treatment)
+
+m <- aggregate(df$Donatedm, list(df$treatment), sum) # for the following change Med to metric
+m$n <- aggregate(df$Donatedm, list(df$treatment), length)[2]
+ggplot(data = m, aes(Group.1, x/n)) +
+  geom_bar(stat = "identity")
+
+ggplot(data = df, aes(x = Donated, color = treatment)) +
+  geom_bar() +
+  facet_wrap(~treatment) +
+  geom_text(data=df.n, aes(x=1, y=20, label=V1), parse=TRUE) +
+  theme(axis.text.x = element_text(angle = 90, vjust=.8, size=10))
+
+ggplot(data = df, aes(x = DonatedMed, y = Donation)) +
+  facet_wrap(~treatment) +
+  geom_jitter() +
+  xlab("Donated less or more than median") +
+  ylab("Exact amount of Donation") +
+  theme(axis.text.x = element_text(angle = 45, vjust=.8, size=10))
+
+ggplot(df, aes(x = Donation)) +
+geom_histogram() + 
+  facet_grid(~DonatedMed) +
+  stat_bin(binwidth = .5) +
+  ggtitle("Frequency of Donation values") +
+  xlab("Donation amount") +
+  ylab("Frequency")
+
+ggplot(data = df, aes(x = Donation))+
+  facet_grid(~DonatedMed) +
+  geom_density() +
+  ggtitle("Kernel density plots")
+```
+
+# Change dependent variable Donation to log(Donation+1)
+```{r, echo=FALSE}
+# http://stats.stackexchange.com/questions/1444/how-should-i-transform-non-negative-data-including-zeros
+df$logD <- log(df$Donation+100)
+log(2)
+```
+
+# Separate into two regressions (because bimodal): Logit then OLS (without zeros)
+```{r, echo = FALSE}
+ggplot(data = df, aes(x = Donationno0)) +
+  geom_histogram() +
+  stat_bin(binwidth = 1) +
+  xlab("Donation amount for subjects that donated a positive amount")
+```
+
+*The distribution of average donations excluding those that gave nothing is also not perfectly normally distributed (because of the small peack at 1 Euro), but more so than the original variable. It is left skewed.*
+
+```{r, echo = FALSE}
+ggplot(data = df, aes(x = Donationno0)) +
+  geom_density()
+## MIND HERE THAT THIS WOULD ALSO HAVE TO CHANGE WHEN I DECIDE TO LOOK AT THE DISTANCE TO 5 INSTEAD OF THE DONATION AMOUNT
+## It could also make sense to look which variable may be sufficient to exclude bimodality. ossibly there is no bimodality when I look at those that think this kind of climate protection is efficient (also others may be possible. That is probably what is also important for hurdle models. That you have one variable that separates both regression terms)
+# Note that in a bimodal distribution methods that look at the mean are not very good!!! https://communities.sas.com/t5/SAS-Statistical-Procedures/Mixed-model-bimodal-distribution/td-p/56286
+```
+
+```{r, echo = FALSE}
+#glm <- glm(Donated ~ ..., dfsub, family = "binomial")
+#lm <- lm(Donationno0 ~ ..., dfsub)
+```
+
+# All tests and descriptive statistics with Distance to 5 instead of Donation variable
+
+# Quantile regression
+```{r, echo = FALSE}
+# http://support.sas.com/resources/papers/proceedings15/3412-2015.pdf
+```
