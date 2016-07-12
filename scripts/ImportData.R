@@ -750,6 +750,9 @@ df$Session <- ifelse(df$Date.x == "160620_1318" | df$Date.x == "160620_1440", 1,
                      ifelse(df$Date.x != "160620_1318" & df$Date.x != "160620_1440" & df$treatment == "RecNos" | df$treatment == "DefNos",0,NA))
 df$Session <- factor(df$Session, levels = c(0,1), labels = c("old", "new"))
 
+## compare Treatments without control 
+df$treatmentnoC <- as.factor(ifelse(df$treatment == "Control", NA, df$treatment))
+df$treatmentnoC <- factor(df$treatmentnoC, levels = c(1,2,3,4,5,6,7,8,9,10), labels=c("RecNos", "DefNos", "RecNap", "DefNap", "RecPol", "DefPol", "RecPar", "DefPar", "RecKno", "DefKno")) 
 
 ## Subdatasets
 
@@ -786,12 +789,12 @@ dfs <- df
 ##### Create Excel File with data ####
 
 library(qdap)
-write.xlsx(x = condense(df), "Z:/Projects/Who intervenes/Experiment/Data/Complete_20062016.xlsx")
+write.xlsx(x = condense(df), "Z:/Projects/Who intervenes/Experiment/Data/Complete_04072016.xlsx")
 
 library(foreign)
 dfstata <- df
 dfstata$notes <- NULL
-write.dta(condense(dfstata), "Z:/Projects/Who intervenes/Experiment/Data/Complete_20062016.dta")
+write.dta(condense(dfstata), "Z:/Projects/Who intervenes/Experiment/Data/Complete_04072016.dta")
 write.foreign(dfstata,
               datafile="dfstata.csv",
               codefile="dfstata2.do",

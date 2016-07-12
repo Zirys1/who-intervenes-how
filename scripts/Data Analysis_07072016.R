@@ -25,6 +25,7 @@ library(compactr) # for interaction plots (mm function)
 library(interplot) # for automatic interaction plots
 library(lsmeans) # predicted marginal means for specified factors or factor combinations (interactions)
 library(effects) # to plot predicted values including interactions
+library(commarobust) # to include robust se'S in stargazer tables
 
 # Distributions ----
 # Histogram of Donation and Distance
@@ -33,33 +34,46 @@ ggplot(data = df, aes(x = Donation)) +
   scale_y_continuous(breaks = c(0, 25, 50, 75, 100, 125, 150)) +
   scale_x_continuous(breaks = c(0, 1, 2,3,4,5,6,7,8))+
   geom_vline(xintercept = 5, linetype = "dashed") +
-  xlab("Contribution (in €)") +
-  ylab("Number of observations")
+  labs(x = "Contribution [in €]", y='Number of observations') +
+  theme(legend.position="none",
+        axis.title.x = element_text(size = 12),
+        axis.title.y = element_text(size = 12),
+        axis.text.x = element_text(vjust=.5, size=10))
 
 ggplot(data = df, aes(x = Dist)) +
   geom_histogram(binwidth = .1) +
   scale_y_continuous(breaks = c(0, 25, 50, 75, 100, 125, 150)) +
   scale_x_continuous(breaks = c(0, 1, 2,3,4,5,6,7,8))+
   geom_vline(xintercept = 2, linetype = "dashed") +
-  xlab("Distance (in €)") +
-  ylab("Number of observations")
+  labs(x = "Distance to 5 [in €]", y='Number of observations') +
+    theme(legend.position="none",
+        axis.title.x = element_text(size = 12),
+        axis.title.y = element_text(size = 12),
+        axis.text.x = element_text(vjust=.5, size=10))
 
 # with fractions on y axis
 ggplot(data = df, aes(x = Donation, y =..count../sum(..count..))) +
   geom_histogram(binwidth = .1) +
-#  scale_y_continuous(breaks = c(0, 25, 50, 75, 100, 125, 150)) +
   scale_x_continuous(breaks = c(0, 1, 2,3,4,5,6,7,8))+
   geom_vline(xintercept = 5, linetype = "dashed") +
-  xlab("Contribution (in €)") +
-  ylab("Number of observations")
+  labs(x = "Contribution [in €]", y='Fraction of participants') +
+  theme(legend.position="none",
+        axis.text.x = element_text(angle = 45, vjust=.5, size=10),
+        axis.title.x = element_text(size = 12),
+        axis.title.y = element_text(size = 12),
+        axis.text.x = element_text(vjust=.5, size=10))
+
 
 ggplot(data = df, aes(x = Dist, y =..count../sum(..count..))) +
   geom_histogram(binwidth = .1) +
 #  scale_y_continuous(breaks = c(0, 25, 50, 75, 100, 125, 150)) +
   scale_x_continuous(breaks = c(0, 1, 2,3,4,5,6,7,8))+
   geom_vline(xintercept = 2, linetype = "dashed") +
-  xlab("Distance (in €)") +
-  ylab("Number of observations")
+  labs(x = "Distance to 5 [in €]", y='Fraction of participants') +
+    theme(legend.position="none",
+        axis.title.x = element_text(size = 12),
+        axis.title.y = element_text(size = 12),
+        axis.text.x = element_text(vjust=.5, size=10))
 
 # Histograms faceted by treatments ----
 ggplot(data = df, aes(x = Donation)) +
@@ -68,29 +82,173 @@ ggplot(data = df, aes(x = Donation)) +
   scale_y_continuous(breaks = c(0, 25, 50, 75, 100, 125, 150)) +
   scale_x_continuous(breaks = c(0, 1, 2,3,4,5,6,7,8))+
   geom_vline(xintercept = 5, linetype = "dashed") +
-  xlab("Contribution (in €)") +
-  ylab("Number of observations")
+  labs(x = "Contribution [in €]", y='Number of observations') +
+  theme(legend.position="none",
+        axis.text.x = element_text(angle = 45, vjust=.5, size=10),
+        axis.title.x = element_text(size = 12),
+        axis.title.y = element_text(size = 12),
+        axis.text.x = element_text(vjust=.5, size=10))
 
 # too complicated to include fractions per group and donation value ----
 dfpart <- aggregate(df$Donation, list(df$treatment, df$Donation), length)
 dfpar1 <- dfpart[dfpart$Group.1 == "Control",]$x 
 dfpart1[dfpart$Group.1 == "Control",]$x/31
 
-
-# count the number of 1.51 - 2.49 in Donations per treatment ----
+# count the number of 0's, 2's and 5'S in Donations per treatment ----
 dfzero <- aggregate(df$Donation == 0, list(df$treatment), sum)
 dfzero$freq <- dfzero$x / aggregate(df$Donation, list(df$treatment), length)[2]
 dftwo <- aggregate(df$Donation == 2, list(df$treatment), sum)
 dftwo$freq <- dftwo$x / aggregate(df$Donation, list(df$treatment), length)[2]
-dffive <- aggregate(df$Donation == 5, list(df$treatment), sum)
-dffive$freq <- dffive$x / aggregate(df$Donation, list(df$treatment), length)[2]
+dfnonzerotwo <- aggregate((df$Donation != 0 & df$Donation != 2), list(df$treatment), sum)
+dfnonzerotwo$freq <- dfnonzerotwo$x / aggregate(df$Donation, list(df$treatment), length)[2]
 
 ggplot() +
-#  geom_bar(data = dftwo, aes(x = Group.1, y = freq), stat = "identity") +
 #  geom_bar(data = dfzero, aes(x = Group.1, y = freq), stat = "identity") +
-  geom_bar(data = dffive, aes(x = Group.1, y = freq), stat = "identity") +
-    scale_y_continuous(breaks = c(0, 0.1, 0.2, 0.3, 0.4, 0.5), limits = c(0, 0.5)) +
-  ylab("Fraction of participants contributing 5") +
-  theme(axis.text.x = element_text(angle = 45, vjust=.8, size=10)) +
-  xlab("Treatments")
+#  geom_bar(data = dftwo, aes(x = Group.1, y = freq), stat = "identity") +
+  geom_bar(data = dfnonzerotwo, aes(x = Group.1, y = freq), stat = "identity") +
+  scale_y_continuous(breaks = c(0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7), limits = c(0, 0.7)) +
+  labs(x = "Experimental group", y='Fraction of participants contributing neither 0 nor 2') +
+  theme(legend.position="none",
+        axis.text.x = element_text(angle = 45, vjust=.5, size=10),
+        axis.title.x = element_text(size = 12),
+        axis.title.y = element_text(size = 12),
+        axis.text.x = element_text(vjust=.5, size=10))
+
+# Boxplots by treaments ----
+ggplot(data = df, aes(x = treatment, y = Donation)) +
+  stat_boxplot(geom ='errorbar', width = 0.5) +
+  geom_boxplot() +
+  stat_summary(fun.y = mean, colour="darkred", geom="point", shape=18, size=3) +
+  scale_y_continuous(breaks = c(0, 1, 2, 3, 4, 5, 6, 7, 8)) +
+  labs(x = "Experimental group", y='Contribution [in €]') +
+  theme(legend.position="none",
+        axis.text.x = element_text(angle = 45, vjust=.5, size=10),
+        axis.title.x = element_text(size = 12),
+        axis.title.y = element_text(size = 12),
+        axis.text.x = element_text(vjust=.5, size=10))
+
+describeBy(df$Donation, df$treatment)
+
+# Is there a default-effect (aggregated over all default-treatments) ----
+df$ConvsRest <- ifelse(df$treatment == "Control", 0, 1)
+wilcox.test(df$Donation ~ df$ConvsRest) # n.s.
+pairwise.wilcox.test(df$Donation, df$treatment, p.adjust.method = "none", exact = FALSE)
+pairwise.wilcox.test(df$Dist, df$treatment, p.adjust.method = "none", exact = FALSE)
+chisq.test(df$Donation, df$treatment) # n.s.
+glm <- (glm(Donated ~ treatment, df, family = "binomial")) # RecPol/DefPol sig
+coeftest(glm, vcov = vcovHC(glm, "HC1")) # RecPol/DefPol sig
+glm <- (glm(Donated ~ RecvsDefD*Sourcetype, df, family = "binomial")) # n.s.
+coeftest(glm, vcov = vcovHC(glm, "HC1")) # n.s.
+
+# Are there treatment effects for those that believed we cooperated with Julia Verlinden? ----
+describeBy(dfbel$Donation, dfbel$treatment)
+kruskal.test(dfbel$Donation ~ dfbel$treatment) # n.s.
+
+summary(lm(Donation ~ RecvsDefD*SourcetypeD*believe2, df)) 
+
+## Boxplots by treatment
+ggplot(data = dfbel, aes(x = treatment, y = Donation)) +
+  stat_boxplot(geom ='errorbar', width = 0.5) +
+  geom_boxplot() +
+  stat_summary(fun.y = mean, colour="darkred", geom="point", shape=18, size=3) +
+  scale_y_continuous(breaks = c(0, 1, 2, 3, 4, 5, 6, 7, 8)) +
+  labs(x = "Experimental group", y='Contribution [in €]') +
+  theme(legend.position="none",
+        axis.text.x = element_text(angle = 45, vjust=.5, size=10),
+        axis.title.x = element_text(size = 12),
+        axis.title.y = element_text(size = 12),
+        axis.text.x = element_text(vjust=.5, size=10))
+
+# Pairwise Wilcox-tests ----
+# for whole dataset
+pairwise.wilcox.test(df$Donation, df$treatment, p.adjust.method = "none", exact = FALSE)
+pairwise.wilcox.test(df$Dist, df$treatment, p.adjust.method = "none", exact = FALSE)
+
+# for those that believe we cooperated with Julia Verlinden
+pairwise.wilcox.test(dfbel$Donation, dfbel$treatment, p.adjust.method = "none", exact = FALSE)
+pairwise.wilcox.test(dfbel$Dist, dfbel$treatment, p.adjust.method = "none", exact = FALSE)
+
+# Proximity of 2 and 5 ----
+length(df$Donation[df$Donation <= 3 & df$Donation >= 1])
+length(df$Donation[df$Donation <= 6 & df$Donation >= 4])
+length(df$Donation[df$Donation <= 5 & df$Donation >= 4])
+
+# excluding all donations >2 
+dfred <- df[df$Donation <= 2,]
+describeBy(dfred$Donation, dfred$treatment)
+
+# Regression analyses and tables ----
+## With treatment variable
+lm1 <- (lm(Dist ~ treatment, df))
+lm2 <- lm(Donation ~ treatment, df)
+lm3 <- lm(Donationno0 ~ treatment, df) # wrong, needs truncreg, currently implemented in Stata
+lm4 <- lm(Distno5 ~ treatment, df) # wrong, needs truncreg, currently implemented in Stata
+glm1 <- glm(Donated ~ treatment , df, family = "binomial")
+glm2 <- glm(Default ~ treatmentnoC, df, family = "binomial")
+
+lm1 <- coeftest(lm1, vcov = vcovHC(lm1, "HC1"))
+lm2 <- coeftest(lm2, vcov = vcovHC(lm2, "HC1"))
+lm3 <- coeftest(lm3, vcov = vcovHC(lm3, "HC1"))
+lm4 <- coeftest(lm4, vcov = vcovHC(lm4, "HC1"))
+glm1 <- coeftest(glm1, vcov = vcovHC(glm1, "HC1"))
+glm2 <- coeftest(glm2, vcov = vcovHC(glm2, "HC1"))
+
+
+stargazer(glm1, lm3, lm2, lm4, lm1, type = "html", style = "aer",
+          covariate.labels = c("RecNos", "DefNos", "RecNap", "DefNap", "RecPol", "DefPol",
+                               "RecPar", "DefPar", "RecKno", "DefKno"))
+
+## With interaction term instead of treatment
+lm1 <- (lm(Dist ~ RecvsDefD*Sourcetype, df))
+lm2 <- lm(Donation ~ RecvsDefD*Sourcetype, df)
+lm3 <- lm(Donationno0 ~ RecvsDefD*Sourcetype, df)
+lm4 <- lm(Distno5 ~ RecvsDefD*Sourcetype, df)
+glm1 <- glm(Donated ~ RecvsDefD*Sourcetype , df, family = "binomial")
+glm2 <- glm(Default ~ RecvsDefD*Sourcetype, df, family = "binomial")
+
+lm1 <- coeftest(lm1, vcov = vcovHC(lm1, "HC1"))
+lm2 <- coeftest(lm2, vcov = vcovHC(lm2, "HC1"))
+lm3 <- coeftest(lm3, vcov = vcovHC(lm3, "HC1"))
+lm4 <- coeftest(lm4, vcov = vcovHC(lm4, "HC1"))
+glm1 <- coeftest(glm1, vcov = vcovHC(glm1, "HC1"))
+glm2 <- coeftest(glm2, vcov = vcovHC(glm2, "HC1"))
+
+stargazer(glm1, lm3, lm2, lm4, lm1, type = "html", style = "aer",
+          covariate.labels = c("Default", "NameAndPicture", "Knowledgeable", "Political",
+                               "Partisan", "Default x NAP", "Default x KNO", "Default x POL",
+                               "Default x PAR"))
+
+## With NosvsSome instead of Sourcetype
+lm1 <- (lm(Dist ~ RecvsDefD*NosvsSomeD, df))
+lm2 <- lm(Donation ~ RecvsDefD*NosvsSomeD, df)
+lm3 <- lm(Donationno0 ~ RecvsDefD*NosvsSomeD, df)
+lm4 <- lm(Distno5 ~ RecvsDefD*NosvsSomeD, df)
+glm1 <- glm(Donated ~ RecvsDefD*NosvsSomeD , df, family = "binomial")
+glm2 <- glm(Default ~ RecvsDefD*NosvsSomeD, df, family = "binomial")
+
+lm1 <- coeftest(lm1, vcov = vcovHC(lm1, "HC1"))
+lm2 <- coeftest(lm2, vcov = vcovHC(lm2, "HC1"))
+lm3 <- coeftest(lm3, vcov = vcovHC(lm3, "HC1"))
+lm4 <- coeftest(lm4, vcov = vcovHC(lm4, "HC1"))
+glm1 <- coeftest(glm1, vcov = vcovHC(glm1, "HC1"))
+glm2 <- coeftest(glm2, vcov = vcovHC(glm2, "HC1"))
+
+stargazer(glm1, lm3, lm2, lm4, lm1, type = "html", style = "aer",
+          covariate.labels = c("Default", "Some Source", "Def x SS"))
+
+# Epps-Singleton & Kolmogorov-Smirnov tests of entire distributions
+ggplot(data = df, aes(x = Donation)) +
+  facet_wrap(~treatment) +
+  geom_histogram( binwidth = 0.1)
+ks.test(df$Donation[df$treatment == "DefNos"], df$Donation[df$treatment == "DefPol"])
+
+
+
+lm1 <- (lm(Dist ~ RecvsDefD*NosvsSomeD, df))
+commarobust(lm1, type = "HC1")
+lm2 <- coeftest(lm1, vcov = vcovHC(lm1, "HC1"))
+stargazer(lm1,lm2, type = "html", style = "aer",
+          covariate.labels = c("Default", "Some Source", "Def x SS"),
+          se = makerobustseslist(lm1),
+          p = makerobustpslist(lm1))
 
