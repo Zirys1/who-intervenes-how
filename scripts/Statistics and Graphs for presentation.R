@@ -163,8 +163,8 @@ m$sd <- aggregate(df$Donatedm, list(df$treatment), sd)[2]
 m$se <- m$sd / sqrt(m$n)
 m$lower <- (m$x / m$n - m$se)*100
 m$upper <- (m$x / m$n + m$se)*100
-m$up90 <- (m$x / m$n + 1.64 * m$se) * 100
-m$low90 <- (m$x / m$n - 1.64 * m$se) * 100
+m$up90 <- (m$x / m$n + 1.64 * m$se) * 100 # not sure if right
+m$low90 <- (m$x / m$n - 1.64 * m$se) * 100 # not sure if right
 
 ggplot(data = m, aes(RecvsDef, x/n*100)) +
   facet_wrap(~Sourcetype) +
@@ -212,9 +212,9 @@ ggplot(data = m, aes(Group.2, x/n*100)) +
         axis.text.x = element_text(angle = 45, vjust=.5, size=10))
 
 
-## Um fragen für kurze Ergebnisbeschreibung (TheCompensators) zu beantworten ----------
+## Um fragen f?r kurze Ergebnisbeschreibung (TheCompensators) zu beantworten ----------
 ### Extensive margin (TheCompensators) ----------
-# Unterscheiden sich NoSource vs Some Source für Defaults, bzw. Rec voneinander?
+# Unterscheiden sich NoSource vs Some Source f?r Defaults, bzw. Rec voneinander?
 chisq.test(df$Donated, df$NosvsSomeD) # < .05
 chisq.test(df$Donated[df$RecvsDefD == "Def"], df$NosvsSomeD[df$RecvsDefD == "Def"]) # < .05
 chisq.test(df$Donated[df$RecvsDefD == "Rec"], df$NosvsSomeD[df$RecvsDefD == "Rec"]) # n.s.
@@ -222,7 +222,7 @@ chisq.test(df$Donated[df$RecvsDefD == "Rec"], df$NosvsSomeD[df$RecvsDefD == "Rec
 # Unterscheiden sich Rec Def Con voneinander?
 chisq.test(df$Donated, df$RecvsDef) # n.s.
 
-# Unterscheiden sich Rec vs Def für No Source bzw. Some Source voneinander?
+# Unterscheiden sich Rec vs Def f?r No Source bzw. Some Source voneinander?
 chisq.test(df$Donated[df$NosvsSomeD == "No Source"], df$RecvsDefD[df$NosvsSomeD == "No Source"]) # n.s.
 chisq.test(df$Donated[df$NosvsSomeD == "Some Source"], df$RecvsDefD[df$NosvsSomeD == "Some Source"]) # n.s.
 
@@ -264,7 +264,7 @@ glm <- (glm(Donated ~ relevel(RecvsDefD, "Def") * NosvsSome, df, family = "binom
 coeftest(glm, vcov = vcovHC(glm, "HC1"))
 
 ### Intensive margin (Donation, not Dist) (TheCompensators) ---------
-# Unterscheiden sich NoSource vs Some Source für Defaults, bzw. Rec voneinander?
+# Unterscheiden sich NoSource vs Some Source f?r Defaults, bzw. Rec voneinander?
 wilcox.test(df$Donation[df$RecvsDefD == "Def"] ~ df$NosvsSomeD[df$RecvsDefD == "Def"]) # n.s.
 wilcox.test(df$Donation[df$RecvsDefD == "Rec"] ~ df$NosvsSomeD[df$RecvsDefD == "Rec"]) # n.s.
 ggplot(df, aes(x = NosvsSome, y = Donation)) +
@@ -290,7 +290,7 @@ ggplot(df, aes(x = NosvsSomeD, y = Donation)) +
 
 kruskal.test(df$Donation ~ df$NosvsSome) # n.s. (?)
 
-# Unterscheiden sich Rec vs Def für No Source bzw. Some Source voneinander?
+# Unterscheiden sich Rec vs Def f?r No Source bzw. Some Source voneinander?
 wilcox.test(df$Donation[df$NosvsSomeD == "No Source"] ~ df$RecvsDefD[df$NosvsSomeD == "No Source"], exact = FALSE)
 # n.s.
 wilcox.test(df$Donation[df$NosvsSomeD == "Some Source"] ~ df$RecvsDefD[df$NosvsSomeD == "Some Source"])
@@ -313,7 +313,7 @@ ggplot(df, aes(x = Donationno0)) +
 # distribution than the non-censored Donation-variable, but still not very good
 # maybe makes sense to prepare the variables as I did for the ordered regression
 
-# Unterscheiden sich NoSource vs Some Source für Defaults, bzw. Rec voneinander?
+# Unterscheiden sich NoSource vs Some Source f?r Defaults, bzw. Rec voneinander?
 
 wilcox.test(df$Donationno0[df$RecvsDefD == "Def"] ~ df$NosvsSomeD[df$RecvsDefD == "Def"]) # n.s.
 wilcox.test(df$Donationno0[df$RecvsDefD == "Rec"] ~ df$NosvsSomeD[df$RecvsDefD == "Rec"]) # n.s.
@@ -336,7 +336,7 @@ kruskal.test(df$Donationno0 ~ df$NosvsSome) # n.s.
 ggplot(df, aes(x = RecvsDef, y = Donationno0)) +
   geom_jitter(shape=1)
 
-# Unterscheiden sich Rec vs Def für No Source bzw. Some Source voneinander?
+# Unterscheiden sich Rec vs Def f?r No Source bzw. Some Source voneinander?
 wilcox.test(df$Donationno0[df$NosvsSomeD == "No Source"] ~ df$RecvsDefD[df$NosvsSomeD == "No Source"], exact = FALSE)
 # n.s.
 wilcox.test(df$Donationno0[df$NosvsSomeD == "Some Source"] ~ df$RecvsDefD[df$NosvsSomeD == "Some Source"])
@@ -355,12 +355,12 @@ ggplot(df, aes(x = Reactance, y = Donationno0)) +
   facet_grid(NosvsSomeD~RecvsDefD) +
   geom_jitter(na.rm=T, shape = 1) +
   geom_smooth(method="lm", na.rm=T) # Hier sieht man, dass die signifikante Interaktion in erster Linie
-# durch die starke negative Interaktion von Reaktanz * Def * No Source herrührt (das ist auch
-# bei Donation der Fall, wobei da die Regressionsgerade für Rec * No Source positiv ist und
+# durch die starke negative Interaktion von Reaktanz * Def * No Source herr?hrt (das ist auch
+# bei Donation der Fall, wobei da die Regressionsgerade f?r Rec * No Source positiv ist und
 # gleichzeitig weniger schwach negative bei Def * No Source)
 summary(lm(Donation ~ RecvsDefD * NosvsSomeD * Reactance, df))
 
-## Gruppentests für die conditionals (nicht-parametrisch) ----------
+## Gruppentests f?r die conditionals (nicht-parametrisch) ----------
 
 ## Kruskal Wallis test on Distance ----
 kruskal.test(df$Dist ~ df$treatment)
@@ -368,12 +368,12 @@ kruskal.test(df$Dist ~ df$treatment)
 wilcox.test(df$Dist ~ df$RecvsDefD)
 ### KW test on Distance aggregated over Intervention type
 kruskal.test(df$Dist ~ df$Sourcetype)
-## Chi² test on Donated
+## Chi? test on Donated
 chisq.test(df$Donated, df$treatment)
 chisq.test(table(df$Sourcetype, df$Donated))
-### Chi² test on Donated aggregated over Sourcetype
+### Chi? test on Donated aggregated over Sourcetype
 chisq.test(df$Donated, df$RecvsDefD)
-### Chi² test on Donated aggregated over Intervention type
+### Chi? test on Donated aggregated over Intervention type
 chisq.test(df$Donated, df$Sourcetype) # < .1
 
 #### Logistic regression on Donated aggregated over Intervention type ------------
@@ -704,7 +704,7 @@ stargazer(rglmres, rglmfull, rglmresNvS, rglmfullNvS, type = "html", style = "ae
 
 tt <- aggregate(df$Donatedm, list(df$Reactance, df$RecvsDefD, df$NosvsSomeD), sum)
 tt$n <- aggregate(df$Donatedm, list(df$Reactance, df$RecvsDefD, df$NosvsSomeD), length)[4]
-tt$sd <- aggregate(df$Donatedm, list(df$Reactance, df$RecvsDefD, df$NosvsSomeD), sd)[4] # macht das hier überhaupt Sinn?
+tt$sd <- aggregate(df$Donatedm, list(df$Reactance, df$RecvsDefD, df$NosvsSomeD), sd)[4] # macht das hier ?berhaupt Sinn?
 tt$se <- tt$sd/sqrt(tt$n)
 tt$upper <- tt$x/tt$n + tt$se
 tt$lower <- tt$x/tt$n - tt$se

@@ -252,3 +252,4 @@ stargazer(lm1,lm2, type = "html", style = "aer",
           se = makerobustseslist(lm1),
           p = makerobustpslist(lm1))
 
+
