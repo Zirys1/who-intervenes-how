@@ -56,7 +56,19 @@ ggplot(data = df, aes(x = Donation, y =..count../sum(..count..))) +
   geom_histogram(binwidth = .1) +
   scale_x_continuous(breaks = c(0, 1, 2,3,4,5,6,7,8))+
   geom_vline(xintercept = 5, linetype = "dashed") +
-  labs(x = "Contribution [in €]", y='Fraction of participants') +
+  labs(title = "Distribution of contribution values", x = "Contribution [in €]", y='Fraction of participants') +
+  theme(legend.position="none",
+        axis.text.x = element_text(angle = 45, vjust=.5, size=10),
+        axis.title.x = element_text(size = 12),
+        axis.title.y = element_text(size = 12),
+        axis.text.x = element_text(vjust=.5, size=10))
+
+# For those that donated
+ggplot(data = df, aes(x = Donationno0, y =..count../sum(..count..))) +
+  geom_histogram(binwidth = .1) +
+  scale_x_continuous(breaks = c(0, 1, 2,3,4,5,6,7,8))+
+  geom_vline(xintercept = 5, linetype = "dashed") +
+  labs(title = "Distribution of contribution values conditional on contributing", x = "Contribution [in €]", y='Fraction of participants') +
   theme(legend.position="none",
         axis.text.x = element_text(angle = 45, vjust=.5, size=10),
         axis.title.x = element_text(size = 12),
@@ -236,15 +248,84 @@ dffive$freq <- dffive$x / aggregate(df$Donation, list(df$treatment), length)[2]
 ggplot() +
 #  geom_bar(data = dfzero, aes(x = Group.1, y = freq), stat = "identity") +
 #  geom_bar(data = dftwo, aes(x = Group.1, y = freq), stat = "identity") +
-  geom_bar(data = dffive, aes(x = Group.1, y = freq), stat = "identity") +
+#  geom_bar(data = dffive, aes(x = Group.1, y = freq), stat = "identity") +
 #  geom_bar(data = dfnonzerotwo, aes(x = Group.1, y = freq), stat = "identity") +
-  scale_y_continuous(breaks = c(0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7), limits = c(0, 0.7)) +
-  labs(x = "Experimental group", y='Fraction of participants contributing 5') +
+  geom_bar(data = dfpos, aes(x = Group.1, y = x/n*100), stat = "identity") +
+  geom_errorbar(data = dfpos, aes(ymin = lower, ymax = upper), colour = "#999999") +
+  scale_y_continuous(breaks = c(0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9), limits = c(0, 0.9)) +
+  labs(x = "Experimental group", y='Fraction of participants contributing something') +
   theme(legend.position="none",
         axis.text.x = element_text(angle = 45, vjust=.5, size=10),
         axis.title.x = element_text(size = 12),
         axis.title.y = element_text(size = 12),
         axis.text.x = element_text(vjust=.5, size=10))
+
+# Extensive margin with Error bars ----
+dfpos <- aggregate(as.numeric(df$Donatedm), list(df$treatment), sum)
+dfpos$n <- aggregate(df$Donatedm, list(df$treatment), length)[2]
+dfpos$sd <- aggregate(as.numeric(df$Donatedm), list(df$treatment), sd)[2]
+dfpos$se <- dfpos$sd/sqrt(dfpos$n)
+dfpos$lower <- (dfpos$x / dfpos$n - dfpos$se)*100
+dfpos$upper <- (dfpos$x / dfpos$n + dfpos$se)*100
+dfpos$up95 <- (dfpos$x / dfpos$n + 1.96 * dfpos$se) * 100
+dfpos$low95 <- (dfpos$x / dfpos$n - 1.96 * dfpos$se) * 100
+
+ggplot(data = dfpos, aes(Group.1, x/n*100)) +
+  geom_bar(stat = "identity") +
+  geom_errorbar(aes(ymin = lower, ymax = upper), colour = "#999999") +
+  scale_y_continuous(breaks = c(0, 10, 20,30,40,50,60,70,80)) +
+  labs(title='Figure 1: Percentage donating', x = "Treatment", y='Contributed (in %)')+
+  theme(plot.title = element_text(size = 10),
+        axis.title.x = element_text(size = 12),
+        axis.title.y = element_text(size = 12),
+        axis.text.x = element_text(vjust=.5, size=10))
+
+## for a subset of treatments 
+ggplot(data = dfpos[dfpos$Group.1 == "DefPol" | dfpos$Group.1 == "DefKno" | dfpos$Group.1 == "RecPol" | dfpos$Group.1 == "RecKno",], aes(Group.1, x/n*100)) +
+  geom_bar(stat = "identity") +
+  geom_errorbar(aes(ymin = lower, ymax = upper), colour = "#999999") +
+  scale_y_continuous(breaks = c(0, 10, 20,30,40,50,60,70,80,90,100)) +
+  labs(title='Figure 1: Percentage donating', x = "Treatment", y='Contributed (in %)')+
+  theme(plot.title = element_text(size = 10),
+        axis.title.x = element_text(size = 12),
+        axis.title.y = element_text(size = 12),
+        axis.text.x = element_text(vjust=.5, size=10))
+
+## different presentation for all treatments except control
+dfpos$RecvsDef <- ifelse(dfpos$Group.1 == "RecNos" |dfpos$Group.1 == "RecNap" |dfpos$Group.1 == "RecPol" |dfpos$Group.1 == "RecPar" |dfpos$Group.1 == "RecKno", 0, ifelse(dfpos$Group.1 != "Control",1,NA))
+dfpos$RecvsDef <- factor(dfpos$RecvsDef, levels = c(0,1), labels = c("Rec", "Def"))
+dfpos$Sourcetype <- ifelse((dfpos$Group.1 == "DefNos" | dfpos$Group.1 == "RecNos"), 0, 
+                           ifelse((dfpos$Group.1 == "DefNap" | dfpos$Group.1 == "RecNap"), 1, 
+                                  ifelse((dfpos$Group.1 == "DefKno" | dfpos$Group.1 == "RecKno"), 2,
+                                         ifelse((dfpos$Group.1 == "DefPol" | dfpos$Group.1 == "RecPol"), 3,
+                                                ifelse((dfpos$Group.1 == "DefPar" | dfpos$Group.1 == "RecPar"), 4, NA)))))
+dfpos$Sourcetype <- as.factor(as.character(dfpos$Sourcetype))
+dfpos$Sourcetype <- factor(dfpos$Sourcetype, levels = c(0,1,2,3,4), labels = c("NoSource", "NameAndPicture", "Knowledgeable", "Political", "Partisan"))
+
+
+ggplot(data = subset(dfpos, dfpos$Group.1 =="Control"| dfpos$Sourcetype != "NameAndPicture" & dfpos$Sourcetype != "Partisan"), aes(Sourcetype, x/n*100, fill=RecvsDef)) +
+  geom_bar(position = position_dodge(), stat = "identity") +
+  geom_errorbar(aes(ymin = lower, ymax = upper), colour = "#999999", width=.2, position=position_dodge(.9)) +
+  scale_y_continuous(breaks = c(0, 10, 20,30,40,50,60,70,80,90,100)) +
+  labs(title='Figure 1: Percentage donating', x = "Treatment", y='Contributed (in %)')+
+  theme(plot.title = element_text(size = 10),
+        axis.title.x = element_text(size = 12),
+        axis.title.y = element_text(size = 12),
+        axis.text.x = element_text(angle=45, vjust=.5, size=10))
+
+
+# same as above for mean donations
+ggplot(data = subset(df, df$treatment == "Control" | df$Sourcetype != "NameAndPicture" & df$Sourcetype != "Partisan"), aes(Sourcetype, Donation, fill=RecvsDef)) +
+#  stat_boxplot(geom ='errorbar', width = 0.5) +
+  geom_boxplot()+
+#  geom_bar(position = position_dodge(), stat = "identity") +
+#  geom_errorbar(aes(ymin = lower, ymax = upper), colour = "#999999", width=.2, position=position_dodge(.9)) +
+  scale_y_continuous(breaks = c(0, 1, 2,3,4,5,6,7)) +
+  labs(title='Figure 1: Percentage donating', x = "Treatment", y='Contribution')+
+  theme(plot.title = element_text(size = 10),
+        axis.title.x = element_text(size = 12),
+        axis.title.y = element_text(size = 12),
+        axis.text.x = element_text(angle=45, vjust=.5, size=10))
 
 # Boxplots by treaments ----
 ggplot(data = df, aes(x = treatment, y = Donation)) +
@@ -317,7 +398,7 @@ lm1 <- (lm(Dist ~ treatment, df))
 lm2 <- lm(Donation ~ treatment, df)
 lm3 <- lm(Donationno0 ~ treatment, df) # wrong, needs truncreg, currently implemented in Stata
 lm4 <- lm(Distno5 ~ treatment, df) # wrong, needs truncreg, currently implemented in Stata
-glm1 <- glm(Donated ~ treatment , df, family = "binomial")
+glm1 <- glm(Donated[df$treatment != "Control"] ~ treatment[df$treatment != "Control"] , df, family = "binomial")
 glm2 <- glm(Default ~ treatment, df, family = "binomial")
 
 #lm1 <- coeftest(lm1, vcov = vcovHC(lm1, "HC1"))
@@ -387,3 +468,9 @@ df$Don2 <- ifelse(df$Donation == 2, 1, 0)
 chisq.test(df$Don2, df$treatment)
 table(df$Don2, df$treatment)
 
+
+chisq.test(table(df$Donated[df$treatment == "DefPol" | df$treatment == "DefKno" | df$treatment == "RecPol" | df$treatment == "RecKno"], df$treatment[df$treatment == "DefPol" | df$treatment == "DefKno"]))
+dfff <- df[df$treatment == "DefPol" | df$treatment == "DefKno" | df$treatment == "RecPol" | df$treatment == "RecKno",]
+chisq.test(dfff$Donated, dfff$treatment)
+
+summary(glm(Donated ~ relevel(RecvsDefD, "Def") * relevel(Sourcetype, "Knowledgeable"), dfff, family = "binomial"))
