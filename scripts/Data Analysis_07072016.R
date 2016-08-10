@@ -474,3 +474,126 @@ dfff <- df[df$treatment == "DefPol" | df$treatment == "DefKno" | df$treatment ==
 chisq.test(dfff$Donated, dfff$treatment)
 
 summary(glm(Donated ~ relevel(RecvsDefD, "Def") * relevel(Sourcetype, "Knowledgeable"), dfff, family = "binomial"))
+
+
+# Testing: whether it is beneficial to use knowledgeable instead of no actor for people with environmental preferences ----
+# we restrict analysis to people giving, assuming that KNO instead of NoS has no impact
+# on the extensive margin and whether people give is an indicator for environmental preferences (bold assumption)
+
+df$NosvsKno <- ifelse(df$Sourcetype == "NoSource", 0, ifelse(df$Sourcetype == "Knowledgeable", 1, NA))
+df$NosvsKno <- factor(df$NosvsKno, levels = c(0,1), labels = c("No Source", "Knowledgeable"))
+
+ggplot(data = df, aes(x = RecvsDefD, y = Donationno0))+
+  facet_grid(~NosvsKno)+
+  geom_boxplot()
+wilcox.test(df$Donationno0[df$Sourcetype == "Knowledgeable"] ~ df$RecvsDefD[df$Sourcetype == "Knowledgeable"], exact = F)
+# Providing a default instead of recommendation is beneficial for knowledgeable default setters
+# but not for no source given (for people that donate, i.e. intensive margin)
+
+ggplot(data = df, aes(x = NosvsKno, y = Donationno0))+
+  facet_grid(~RecvsDefD)+
+  geom_boxplot()
+wilcox.test(df$Donation[df$Sourcetype == "NoSource" | df$Sourcetype == "Political" & df$RecvsDefD == "Def"] ~ df$Sourcetype[df$Sourcetype == "NoSource" | df$Sourcetype == "Political" & df$RecvsDefD == "Def"], exact = F)
+# Providing a knowledgeable default setter for recommendations is not beneficial
+# and has no effect for defaults
+
+
+df$NosvsPol <- ifelse(df$Sourcetype == "NoSource", 0, ifelse(df$Sourcetype == "Political", 1, NA))
+df$NosvsPol <- factor(df$NosvsPol, levels = c(0,1), labels = c("No Source", "Political"))
+
+ggplot(data = df, aes(x = RecvsDefD, y = Donationno0))+
+  facet_grid(~NosvsPol)+
+  geom_boxplot()
+wilcox.test(df$Donationno0[df$Sourcetype == "Political"] ~ df$RecvsDefD[df$Sourcetype == "Political"], exact = F)
+# Providing a default instead of recommendation is decreasing contributions
+# for political default setters (not significant)
+# and also not for no source given (for people that donate, i.e. intensive margin)
+
+ggplot(data = df, aes(x = NosvsPol, y = Donationno0))+
+  facet_grid(~RecvsDefD)+
+  geom_boxplot()
+wilcox.test(df$Donationno0[df$Sourcetype == "NoSource" | df$Sourcetype == "Political" & df$RecvsDefD == "Rec"] ~ df$Sourcetype[df$Sourcetype == "NoSource" | df$Sourcetype == "Political" & df$RecvsDefD == "Rec"])
+# Providing a political default setter for default is decreasing contributions (not significant)
+# and has no effect for defaults
+
+
+ggplot(data = subset(df, df$treatment =="Control"| df$Sourcetype != "NameAndPicture" & df$Sourcetype != "Partisan"), aes(Sourcetype, Donation, fill=RecvsDef)) +
+ geom_boxplot(position = position_dodge())
+  # geom_bar(position = position_dodge(), stat = "identity") +
+ # geom_errorbar(aes(ymin = lower, ymax = upper), colour = "#999999", width=.2, position=position_dodge(.9)) +
+ # scale_y_continuous(breaks = c(0, 10, 20,30,40,50,60,70,80,90,100)) +
+  labs(title='Figure 1: Percentage donating', x = "Treatment", y='Contributed (in %)')+
+  theme(plot.title = element_text(size = 10),
+        axis.title.x = element_text(size = 12),
+        axis.title.y = element_text(size = 12),
+        axis.text.x = element_text(angle=45, vjust=.5, size=10))
+
+  ggplot(data = subset(df, df$treatment =="Control"| df$Sourcetype != "NameAndPicture" & df$Sourcetype != "Partisan"), aes(Sourcetype, Donationno0, fill=RecvsDef)) +
+    geom_boxplot(position = position_dodge())
+  # geom_bar(position = position_dodge(), stat = "identity") +
+  # geom_errorbar(aes(ymin = lower, ymax = upper), colour = "#999999", width=.2, position=position_dodge(.9)) +
+  # scale_y_continuous(breaks = c(0, 10, 20,30,40,50,60,70,80,90,100)) +
+  labs(title='Figure 1: Percentage donating', x = "Treatment", y='Contributed (in %)')+
+    theme(plot.title = element_text(size = 10),
+          axis.title.x = element_text(size = 12),
+          axis.title.y = element_text(size = 12),
+          axis.text.x = element_text(angle=45, vjust=.5, size=10))
+  
+chisq.test(df$Donated[df$Sourcetype == "NoSource" | df$Sourcetype == "Political" & df$RecvsDefD == "Def"], df$Sourcetype[df$Sourcetype == "NoSource" | df$Sourcetype == "Political" & df$RecvsDefD == "Def"])
+
+# Regression tables pooled over Sourcetype ----
+## With interaction term instead of treatment 
+lm1 <- (lm(Dist ~ RecvsDefD*ReactanceM, df))
+lm2 <- lm(Donation ~ RecvsDefD*ReactanceM, df)
+lm3 <- lm(Donationno0 ~ RecvsDefD*ReactanceM, df)
+lm4 <- lm(Distno5 ~ RecvsDefD*ReactanceM, df)
+glm1 <- glm(Donated ~ RecvsDefD*ReactanceM , df, family = "binomial")
+glm2 <- glm(Default ~ RecvsDefD*ReactanceM, df, family = "binomial")
+
+stargazer(glm1, lm3, lm2, lm4, lm1, type = "html", style = "aer",
+          se = makerobustseslist(glm1, lm3, lm2, lm4, lm1, type = "HC1"),
+          p = makerobustpslist(glm1, lm3, lm2, lm4, lm1, type = "HC1"),
+          covariate.labels = c("Default", "ATR", "Default x ATR"))
+
+# with above/below ATR dummy
+lm1 <- (lm(Dist ~ RecvsDefD*ReactD, df))
+lm2 <- lm(Donation ~ RecvsDefD*ReactD, df)
+lm3 <- lm(Donationno0 ~ RecvsDefD*ReactD, df)
+lm4 <- lm(Distno5 ~ RecvsDefD*ReactD, df)
+glm1 <- glm(Donated ~ RecvsDefD*ReactD , df, family = "binomial")
+glm2 <- glm(Default ~ RecvsDefD*ReactD, df, family = "binomial")
+
+stargazer(glm1, lm3, lm2, lm4, lm1, type = "html", style = "aer",
+          se = makerobustseslist(glm1, lm3, lm2, lm4, lm1, type = "HC1"),
+          p = makerobustpslist(glm1, lm3, lm2, lm4, lm1, type = "HC1"),
+          covariate.labels = c("Default", "ATR(d)", "Default x ATR"))
+
+
+# Regression tables pooled over Intervention type ----
+## With interaction term instead of treatment 
+lm1 <- (lm(Dist ~ Sourcetype*ReactanceM, df))
+lm2 <- lm(Donation ~ Sourcetype*ReactanceM, df)
+lm3 <- lm(Donationno0 ~ Sourcetype*ReactanceM, df)
+lm4 <- lm(Distno5 ~ Sourcetype*ReactanceM, df)
+glm1 <- glm(Donated ~ Sourcetype*ReactanceM , df, family = "binomial")
+glm2 <- glm(Default ~ Sourcetype*ReactanceM, df, family = "binomial")
+
+stargazer(glm1, lm3, lm2, lm4, lm1, type = "html", style = "aer",
+          se = makerobustseslist(glm1, lm3, lm2, lm4, lm1, type = "HC1"),
+          p = makerobustpslist(glm1, lm3, lm2, lm4, lm1, type = "HC1"),
+          covariate.labels = c("NAP", "KNO", "POL", "PAR", "ATR",
+                               "NAP x ATR", "KNO x ATR", "POL x ATR", "PAR x ATR"))
+
+# with above/below ATR dummy
+lm1 <- (lm(Dist ~ relevel(Sourcetype, "Political") *ReactD, df))
+lm2 <- lm(Donation ~ relevel(Sourcetype, "Political")*ReactD, df)
+lm3 <- lm(Donationno0 ~ relevel(Sourcetype, "Political")*ReactD, df)
+lm4 <- lm(Distno5 ~ relevel(Sourcetype, "Political")*ReactD, df)
+glm1 <- glm(Donated ~ relevel(Sourcetype, "Political")*ReactD , df, family = "binomial")
+glm2 <- glm(Default ~ relevel(Sourcetype, "Political")*ReactD, df, family = "binomial")
+
+stargazer(glm1, lm3, lm2, lm4, lm1, type = "html", style = "aer",
+          se = makerobustseslist(glm1, lm3, lm2, lm4, lm1, type = "HC1"),
+          p = makerobustpslist(glm1, lm3, lm2, lm4, lm1, type = "HC1"),
+          covariate.labels = c("NOS", "NAP", "KNO", "PAR", "ATR(d)",
+                               "NOS x ATR(d)", "NAP x ATR(d)", "KNO x ATR(d)", "PAR x ATR(d)"))
