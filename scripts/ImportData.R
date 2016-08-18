@@ -422,6 +422,8 @@ colnames(df)[22] <- "reactance4"
 
 ### Create Dummy = 1 if subject chose the default ####
 df$Default <- ifelse(df$Donation == 5 & df$DefaultHitTime > 0 & (df$treatment == "DefNos" | df$treatment == "DefNap" | df$treatment == "DefPol" | df$treatment == "DefPar" | df$treatment == "DefKno"), 1, 0)
+df$Don5 <- ifelse(df$Donation == 5, 1, 0)
+df$Don456 <- ifelse(df$Donation >= 4 & df$Donation <= 6, 1, 0)
 df <- df[, c(1:5, 73, 6:72)]
 df$Default <- as.factor(df$Default)
 

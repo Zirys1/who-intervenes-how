@@ -25,7 +25,8 @@ library(compactr) # for interaction plots (mm function)
 library(interplot) # for automatic interaction plots
 library(lsmeans) # predicted marginal means for specified factors or factor combinations (interactions)
 library(effects) # to plot predicted values including interactions
-library(commarobust) # to include robust se'S in stargazer tables
+library(commarobust)
+
 
 # Distributions ----
 # Histogram of Donation and Distance
@@ -103,6 +104,16 @@ ggplot(data = df, aes(x = Donation, y = ..count../sum(..count..))) +
         axis.text.x = element_text(vjust=.5, size=10))
 
 # Facetted by treatment
+## with complete distribution in background
+dd <- df[, -7]
+ggplot(df, aes(x = Donation, fill = treatment)) +
+  geom_histogram(data=dd, fill = "grey", alpha = .5) +
+  geom_histogram(colour = "black") +
+  facet_wrap(~treatment) +
+  guides(fill = FALSE) + # to remove the legend
+  theme_bw()
+
+## by treatment
 ggplot(data = df[df$treatment == "Control",], aes(x = Donation, y = ..count../sum(..count..))) +
   geom_histogram(binwidth = .1) +
   scale_y_continuous(breaks = c(0, .05, .1, .15, .2, .25, .3, .35, .4, .45,.5), limits = c(0, .5)) +
@@ -541,59 +552,245 @@ ggplot(data = subset(df, df$treatment =="Control"| df$Sourcetype != "NameAndPict
   
 chisq.test(df$Donated[df$Sourcetype == "NoSource" | df$Sourcetype == "Political" & df$RecvsDefD == "Def"], df$Sourcetype[df$Sourcetype == "NoSource" | df$Sourcetype == "Political" & df$RecvsDefD == "Def"])
 
-# Regression tables pooled over Sourcetype ----
-## With interaction term instead of treatment 
-lm1 <- (lm(Dist ~ RecvsDefD*ReactanceM, df))
-lm2 <- lm(Donation ~ RecvsDefD*ReactanceM, df)
-lm3 <- lm(Donationno0 ~ RecvsDefD*ReactanceM, df)
-lm4 <- lm(Distno5 ~ RecvsDefD*ReactanceM, df)
-glm1 <- glm(Donated ~ RecvsDefD*ReactanceM , df, family = "binomial")
-glm2 <- glm(Default ~ RecvsDefD*ReactanceM, df, family = "binomial")
 
-stargazer(glm1, lm3, lm2, lm4, lm1, type = "html", style = "aer",
-          se = makerobustseslist(glm1, lm3, lm2, lm4, lm1, type = "HC1"),
-          p = makerobustpslist(glm1, lm3, lm2, lm4, lm1, type = "HC1"),
-          covariate.labels = c("Default", "ATR", "Default x ATR"))
+#####################################################################################
+#####################################################################################
+#####################################################################################
+#####################################################################################
 
-# with above/below ATR dummy
-lm1 <- (lm(Dist ~ RecvsDefD*ReactD, df))
-lm2 <- lm(Donation ~ RecvsDefD*ReactD, df)
-lm3 <- lm(Donationno0 ~ RecvsDefD*ReactD, df)
-lm4 <- lm(Distno5 ~ RecvsDefD*ReactD, df)
-glm1 <- glm(Donated ~ RecvsDefD*ReactD , df, family = "binomial")
-glm2 <- glm(Default ~ RecvsDefD*ReactD, df, family = "binomial")
+# Regression tables with tripple interaction term ----
+## With metric reactance
+ggplot(data = df[df$treatment != "Control",], aes(x = ReactanceM, y = Donation)) +
+  facet_grid(RecvsDefD ~ Sourcetype) +
+  geom_jitter(shape = 1) +
+  geom_smooth(method = "lm") +
+  stat_summary(fun.y = mean, colour="darkred", geom="point", shape=18, size=3) +
+  scale_y_continuous(breaks = c(0, 1, 2, 3, 4, 5, 6, 7)) +
+  ggtitle("Contributions by Treatment factors and by average trait reactance") +
+  labs(x = "ATR (de-meaned)", y='Contribution [in €]') +
+  theme(legend.position="none",
+        plot.title = element_text(vjust=.5,size = 12),
+        axis.title.x = element_text(size = 12),
+        axis.title.y = element_text(size = 12),
+        axis.text.x = element_text(angle = 45, vjust=.5, size=10))
 
-stargazer(glm1, lm3, lm2, lm4, lm1, type = "html", style = "aer",
-          se = makerobustseslist(glm1, lm3, lm2, lm4, lm1, type = "HC1"),
-          p = makerobustpslist(glm1, lm3, lm2, lm4, lm1, type = "HC1"),
-          covariate.labels = c("Default", "ATR(d)", "Default x ATR"))
+
+lm1 <- (lm(Dist ~ RecvsDefD*Sourcetype*ReactanceM, df))
+lm2 <- lm(Donation ~ RecvsDefD*Sourcetype*ReactanceM, df)
+lm3 <- lm(Donationno0 ~ RecvsDefD*Sourcetype*ReactanceM, df)
+lm4 <- lm(Distno5 ~ RecvsDefD*Sourcetype*ReactanceM, df)
+glm1 <- glm(Donated ~ RecvsDefD*Sourcetype*ReactanceM , df, family = "binomial")
+glm2 <- glm(Don456 ~ RecvsDefD*Sourcetype*ReactanceM, df, family = "binomial")
+
+stargazer(glm1, glm2, lm3, lm4, lm2, lm1, type = "html", style = "aer",
+          se = makerobustseslist(glm1, glm2, lm3, lm4, lm2, lm1, type = "HC1"),
+          p = makerobustpslist(glm1, glm2, lm3, lm4, lm2, lm1, type = "HC1"),
+          covariate.labels = c("Def", "NAP", "KNO", "POL", "PAR", "ATR",
+                               "Def x NAP", "Def x KNO", "Def x POL", "Def x PAR",
+                               "Def x ATR", "NAP x ATR", "KNO x ATR", "POL x ATR",
+                               "PAR x ATR", "Def x NAP x ATR", "Def x KNO x ATR",
+                               "Def x POL x ATR", "Def x PAR x ATR"))
+
+## with metric reactance and NosvsSomeD
+ggplot(data = df[df$treatment != "Control",], aes(x = ReactanceM, y = Donation)) +
+  facet_grid(RecvsDefD ~ NosvsSomeD) +
+  geom_jitter(shape = 1) +
+  geom_smooth(method = "lm") +
+  stat_summary(fun.y = mean, colour="darkred", geom="point", shape=18, size=3) +
+  scale_y_continuous(breaks = c(0, 1, 2, 3, 4, 5, 6, 7)) +
+  ggtitle("Contributions by Treatment factors and by average trait reactance dummy") +
+  labs(x = "ATR (de-meaned)", y='Contribution [in €]') +
+  theme(legend.position="none",
+        plot.title = element_text(vjust=.5,size = 12),
+        axis.title.x = element_text(size = 12),
+        axis.title.y = element_text(size = 12),
+        axis.text.x = element_text(angle = 45, vjust=.5, size=10))
+
+lm1 <- (lm(Dist ~ RecvsDefD*NosvsSomeD*ReactanceM, df))
+lm2 <- lm(Donation ~ RecvsDefD*NosvsSomeD*ReactanceM, df)
+lm3 <- lm(Donationno0 ~ RecvsDefD*NosvsSomeD*ReactanceM, df)
+lm4 <- lm(Distno5 ~ RecvsDefD*NosvsSomeD*ReactanceM, df)
+glm1 <- glm(Donated ~ RecvsDefD*NosvsSomeD*ReactanceM , df, family = "binomial")
+glm2 <- glm(Don456 ~ RecvsDefD*NosvsSomeD*ReactanceM, df, family = "binomial")
+
+stargazer(glm1, glm2, lm3, lm4, lm2, lm1, type = "html", style = "aer",
+          se = makerobustseslist(glm1, glm2, lm3, lm4, lm2, lm1, type = "HC1"),
+          p = makerobustpslist(glm1, glm2, lm3, lm4, lm2, lm1, type = "HC1"),
+          covariate.labels = c("Def", "SS", "ATR", "Def x SS", "Def x ATR", "SS x ATR",
+                               "Def x SS x ATR"))
+
+##with dummy-reactance
+ggplot(data = df[df$treatment != "Control",], aes(x = RecvsDefD, y = Donation)) +
+  facet_grid(ReactD ~ Sourcetype) +
+  stat_boxplot(geom ='errorbar', width = 0.5) +
+  geom_boxplot() +
+  stat_summary(fun.y = mean, colour="darkred", geom="point", shape=18, size=3) +
+  scale_y_continuous(breaks = c(0, 1, 2, 3, 4, 5, 6, 7)) +
+  ggtitle("Contributions by Treatment factors and by average trait reactance dummy") +
+  labs(x = "Intervention type", y='Contribution [in €]') +
+  theme(legend.position="none",
+        plot.title = element_text(vjust=.5,size = 12),
+        axis.title.x = element_text(size = 12),
+        axis.title.y = element_text(size = 12),
+        axis.text.x = element_text(angle = 45, vjust=.5, size=10))
+
+lm1 <- (lm(Dist ~ RecvsDefD*Sourcetype*ReactD, df))
+lm2 <- lm(Donation ~ RecvsDefD*Sourcetype*ReactD, df)
+lm3 <- lm(Donationno0 ~ RecvsDefD*Sourcetype*ReactD, df)
+lm4 <- lm(Distno5 ~ RecvsDefD*Sourcetype*ReactD, df)
+glm1 <- glm(Donated ~ RecvsDefD*Sourcetype*ReactD , df, family = "binomial")
+glm2 <- glm(Don456 ~ RecvsDefD*Sourcetype*ReactD, df, family = "binomial")
+
+stargazer(glm1, glm2, lm3, lm4, lm2, lm1, type = "html", style = "aer",
+          se = makerobustseslist(glm1, glm2, lm3, lm4, lm2, lm1, type = "HC1"),
+          p = makerobustpslist(glm1, glm2, lm3, lm4, lm2, lm1, type = "HC1"),
+          covariate.labels = c("Def", "NAP", "KNO", "POL", "PAR", "ATRd",
+                               "Def x NAP", "Def x KNO", "Def x POL", "Def x PAR",
+                               "Def x ATRd", "NAP x ATRd", "KNO x ATRd", "POL x ATRd",
+                               "PAR x ATRd", "Def x NAP x ATRd", "Def x KNO x ATRd",
+                               "Def x POL x ATRd", "Def x PAR x ATRd"))
+
+## with binary reactance and NosvsSomeD
+ggplot(data = df[df$treatment != "Control",], aes(x = RecvsDefD, y = Donation)) +
+  facet_grid(ReactD ~ NosvsSomeD) +
+  stat_boxplot(geom ='errorbar', width = 0.5) +
+  geom_boxplot() +
+  stat_summary(fun.y = mean, colour="darkred", geom="point", shape=18, size=3) +
+  scale_y_continuous(breaks = c(0, 1, 2, 3, 4, 5, 6, 7)) +
+  ggtitle("Contributions by Treatment factors and by average trait reactance dummy") +
+  labs(x = "Intervention type", y='Contribution [in €]') +
+  theme(legend.position="none",
+        plot.title = element_text(vjust=.5,size = 12),
+        axis.title.x = element_text(size = 12),
+        axis.title.y = element_text(size = 12),
+        axis.text.x = element_text(angle = 45, vjust=.5, size=10))
+
+lm1 <- (lm(Dist ~ RecvsDefD*NosvsSomeD*ReactD, df))
+lm2 <- lm(Donation ~ RecvsDefD*NosvsSomeD*ReactD, df)
+lm3 <- lm(Donationno0 ~ RecvsDefD*NosvsSomeD*ReactD, df)
+lm4 <- lm(Distno5 ~ RecvsDefD*NosvsSomeD*ReactD, df)
+glm1 <- glm(Donated ~ RecvsDefD*NosvsSomeD*ReactD , df, family = "binomial")
+glm2 <- glm(Don456 ~ RecvsDefD*NosvsSomeD*ReactD, df, family = "binomial")
+
+stargazer(glm1, glm2, lm3, lm4, lm2, lm1, type = "html", style = "aer",
+          se = makerobustseslist(glm1, glm2, lm3, lm4, lm2, lm1, type = "HC1"),
+          p = makerobustpslist(glm1, glm2, lm3, lm4, lm2, lm1, type = "HC1"),
+          covariate.labels = c("Def", "SS", "ATRd", "Def x SS", "Def x ATRd",
+                               "SS x ATRd", "Def x SS x ATRd"))
 
 
 # Regression tables pooled over Intervention type ----
 ## With interaction term instead of treatment 
+ggplot(data = df[df$treatment != "Control",], aes(x = ReactanceM, y = Donation)) +
+  facet_grid(~Sourcetype) +
+  geom_jitter(shape = 1) +
+  geom_smooth(method = "lm") +
+  stat_summary(fun.y = mean, colour="darkred", geom="point", shape=18, size=3) +
+  scale_y_continuous(breaks = c(0, 1, 2, 3, 4, 5, 6, 7)) +
+  ggtitle("Contributions by Sourcetype ppoled over interventions and by average trait reactance dummy") +
+  labs(x = "ATR (de-meaned)", y='Contribution [in €]') +
+  theme(legend.position="none",
+        plot.title = element_text(vjust=.5,size = 12),
+        axis.title.x = element_text(size = 12),
+        axis.title.y = element_text(size = 12),
+        axis.text.x = element_text(angle = 45, vjust=.5, size=10))
+
 lm1 <- (lm(Dist ~ Sourcetype*ReactanceM, df))
 lm2 <- lm(Donation ~ Sourcetype*ReactanceM, df)
 lm3 <- lm(Donationno0 ~ Sourcetype*ReactanceM, df)
 lm4 <- lm(Distno5 ~ Sourcetype*ReactanceM, df)
 glm1 <- glm(Donated ~ Sourcetype*ReactanceM , df, family = "binomial")
-glm2 <- glm(Default ~ Sourcetype*ReactanceM, df, family = "binomial")
+glm2 <- glm(Don456 ~ Sourcetype*ReactanceM, df, family = "binomial")
 
-stargazer(glm1, lm3, lm2, lm4, lm1, type = "html", style = "aer",
-          se = makerobustseslist(glm1, lm3, lm2, lm4, lm1, type = "HC1"),
-          p = makerobustpslist(glm1, lm3, lm2, lm4, lm1, type = "HC1"),
+stargazer(glm1, glm2, lm3, lm4, lm2, lm1, type = "html", style = "aer",
+          se = makerobustseslist(glm1, glm2, lm3, lm4, lm2, lm1, type = "HC1"),
+          p = makerobustpslist(glm1, glm2, lm3, lm4, lm2, lm1, type = "HC1"),
           covariate.labels = c("NAP", "KNO", "POL", "PAR", "ATR",
                                "NAP x ATR", "KNO x ATR", "POL x ATR", "PAR x ATR"))
 
 # with above/below ATR dummy
-lm1 <- (lm(Dist ~ relevel(Sourcetype, "Political") *ReactD, df))
-lm2 <- lm(Donation ~ relevel(Sourcetype, "Political")*ReactD, df)
-lm3 <- lm(Donationno0 ~ relevel(Sourcetype, "Political")*ReactD, df)
-lm4 <- lm(Distno5 ~ relevel(Sourcetype, "Political")*ReactD, df)
-glm1 <- glm(Donated ~ relevel(Sourcetype, "Political")*ReactD , df, family = "binomial")
-glm2 <- glm(Default ~ relevel(Sourcetype, "Political")*ReactD, df, family = "binomial")
+ggplot(data = df[df$treatment != "Control",], aes(x = Sourcetype, y = Donation)) +
+  facet_grid(~ReactD) +
+  stat_boxplot(geom ='errorbar', width = 0.5) +
+  geom_boxplot() +
+  stat_summary(fun.y = mean, colour="darkred", geom="point", shape=18, size=3) +
+  scale_y_continuous(breaks = c(0, 1, 2, 3, 4, 5, 6, 7)) +
+  ggtitle("Contributions by Treatment factors and by average trait reactance dummy") +
+  labs(x = "Sourcetype", y='Contribution [in €]') +
+  theme(legend.position="none",
+        plot.title = element_text(vjust=.5,size = 12),
+        axis.title.x = element_text(size = 12),
+        axis.title.y = element_text(size = 12),
+        axis.text.x = element_text(angle = 45, vjust=.5, size=10))
 
-stargazer(glm1, lm3, lm2, lm4, lm1, type = "html", style = "aer",
-          se = makerobustseslist(glm1, lm3, lm2, lm4, lm1, type = "HC1"),
-          p = makerobustpslist(glm1, lm3, lm2, lm4, lm1, type = "HC1"),
-          covariate.labels = c("NOS", "NAP", "KNO", "PAR", "ATR(d)",
+lm1 <- (lm(Dist ~ Sourcetype *ReactD, df))
+lm2 <- lm(Donation ~ Sourcetype*ReactD, df)
+lm3 <- lm(Donationno0 ~ Sourcetype*ReactD, df)
+lm4 <- lm(Distno5 ~ Sourcetype*ReactD, df)
+glm1 <- glm(Donated ~ Sourcetype*ReactD , df, family = "binomial")
+glm2 <- glm(Don456 ~ Sourcetype*ReactD, df, family = "binomial")
+
+stargazer(glm1, glm2, lm3, lm4, lm2, lm1, type = "html", style = "aer",
+          se = makerobustseslist(glm1, glm2, lm3, lm4, lm2, lm1, type = "HC1"),
+          p = makerobustpslist(glm1, glm2, lm3, lm4, lm2, lm1, type = "HC1"),
+          covariate.labels = c("NAP", "KNO", "POL", "PAR", "ATR(d)",
                                "NOS x ATR(d)", "NAP x ATR(d)", "KNO x ATR(d)", "PAR x ATR(d)"))
+
+
+# Regression tables (with interactions) pooled over Sourcetype ----
+## With interaction term instead of treatment 
+ggplot(data = df[df$treatment != "Control",], aes(x = ReactanceM, y = Donation)) +
+  facet_grid(~RecvsDefD) +
+  geom_jitter(shape = 1) +
+  geom_smooth(method = "lm") +
+  stat_summary(fun.y = mean, colour="darkred", geom="point", shape=18, size=3) +
+  scale_y_continuous(breaks = c(0, 1, 2, 3, 4, 5, 6, 7)) +
+  ggtitle("Contributions by Treatment factors and by average trait reactance dummy") +
+  labs(x = "ATR (de-meaned)", y='Contribution [in €]') +
+  theme(legend.position="none",
+        plot.title = element_text(vjust=.5,size = 12),
+        axis.title.x = element_text(size = 12),
+        axis.title.y = element_text(size = 12),
+        axis.text.x = element_text(angle = 45, vjust=.5, size=10))
+
+lm1 <- (lm(Dist ~ RecvsDefD*ReactanceM, df))
+lm2 <- lm(Donation ~ RecvsDefD*ReactanceM, df)
+lm3 <- lm(Donationno0 ~ RecvsDefD*ReactanceM, df)
+lm4 <- lm(Distno5 ~ RecvsDefD*ReactanceM, df)
+glm1 <- glm(Donated ~ RecvsDefD*ReactanceM , df, family = "binomial")
+glm2 <- glm(Don456 ~ RecvsDefD*ReactanceM, df, family = "binomial")
+
+stargazer(glm1, glm2, lm3, lm4, lm2, lm1, type = "html", style = "aer",
+          se = makerobustseslist(glm1, glm2, lm3, lm4, lm2, lm1, type = "HC1"),
+          p = makerobustpslist(glm1, glm2, lm3, lm4, lm2, lm1, type = "HC1"),
+          covariate.labels = c("Default", "ATR", "Default x ATR"))
+
+# with above/below ATR dummy
+ggplot(data = df[df$treatment != "Control",], aes(x = RecvsDefD, y = Donation)) +
+  facet_grid(~ReactD) +
+  stat_boxplot(geom ='errorbar', width = 0.5) +
+  geom_boxplot() +
+  stat_summary(fun.y = mean, colour="darkred", geom="point", shape=18, size=3) +
+  scale_y_continuous(breaks = c(0, 1, 2, 3, 4, 5, 6, 7)) +
+  ggtitle("Contributions by Treatment factors and by average trait reactance dummy") +
+  labs(x = "Intervention type", y='Contribution [in €]') +
+  theme(legend.position="none",
+        plot.title = element_text(vjust=.5,size = 12),
+        axis.title.x = element_text(size = 12),
+        axis.title.y = element_text(size = 12),
+        axis.text.x = element_text(angle = 45, vjust=.5, size=10))
+
+lm1 <- (lm(Dist ~ RecvsDefD*ReactD, df))
+lm2 <- lm(Donation ~ RecvsDefD*ReactD, df)
+lm3 <- lm(Donationno0 ~ RecvsDefD*ReactD, df)
+lm4 <- lm(Distno5 ~ RecvsDefD*ReactD, df)
+glm1 <- glm(Donated ~ RecvsDefD*ReactD , df, family = "binomial")
+glm2 <- glm(Don456 ~ RecvsDefD*ReactD, df, family = "binomial")
+
+stargazer(glm1, glm2, lm3, lm4, lm2, lm1, type = "html", style = "aer",
+          se = makerobustseslist(glm1, glm2, lm3, lm4, lm2, lm1, type = "HC1"),
+          p = makerobustpslist(glm1, glm2, lm3, lm4, lm2, lm1, type = "HC1"),
+          covariate.labels = c("Default", "ATR(d)", "Default x ATR"))
+
+
+?stargazer
